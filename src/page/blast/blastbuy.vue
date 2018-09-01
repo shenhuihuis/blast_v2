@@ -19,14 +19,27 @@
             </div>
             <div class="blastlist">
                 <el-table :data="dataList" style="width: 100%">
-                    <el-table-column prop="name" label="项目名称"  width="240px"></el-table-column>
-                    <el-table-column prop="projectAddress" label="作业地点" width="200px"> </el-table-column>
-                    <el-table-column prop="status" label="状态" :formatter='formatState' width="140px"></el-table-column>
+                    <el-table-column prop="projectName" label="项目名称"  width="240px"></el-table-column>
+                    <el-table-column prop="buyMsg" label="本次购买爆破物品信息" width="360px"> </el-table-column>
+                    <el-table-column label="运输时间"  width="240px">
+                        <template slot-scope="scope" > 
+                            <span v-if="scope.row.status==0">-</span>
+                            <span v-if="scope.row.status==1 || scope.row.status==2">{{scope.row.transportTime}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="applyTime" label="申请时间"  width="240px"></el-table-column>
+                    <el-table-column prop="status" label="审批状态"  width="200px"  :formatter='formatState'></el-table-column>
+                    <el-table-column label="许可证">
+                        <template slot-scope="scope" > 
+                            <span v-if="scope.row.status==0">-</span>
+                            <el-button type="text" size="small" v-if="scope.row.status==1">上传许可证</el-button>
+                            <span v-if="scope.row.status==2 || scope.row.status==3">已上传</span>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <el-button type="text" size="small"  @click = "handleDetail(scope.row.id)">查看</el-button>
-                        <el-button type="text" size="small"  @click = "completed(scope.row.id)"  v-if = 'scope.row.status == 0'>竣工</el-button>
-                    </template>
+                        <template slot-scope="scope">
+                            <el-button type="text" size="small"  @click = "handleDetail(scope.row.id)">查看</el-button>
+                        </template>
                     </el-table-column>
                 </el-table>
             
@@ -214,35 +227,35 @@
                        },
                        blastlist:{
                             zy:[{           
-                                    pyrotechnicsModel:"",  //火工品型号 
-                                    pyrotechnicsName:"",   //火工品名称 ,
-                                    pyrotechnicsNumber:"", //火工品数量 ,
-                                    pyrotechnicsType:1,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
-                                    pyrotechnicsUnit:"Kg", // 火工品单位
+                                    pyrotechnicsModel:"",           //火工品型号 
+                                    pyrotechnicsName:"",            //火工品名称 ,
+                                    pyrotechnicsNumber:"",          //火工品数量 ,
+                                    pyrotechnicsType:1,             //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
+                                    pyrotechnicsUnit:"Kg",          // 火工品单位
                                 }, 
                             ],
                             lg:[
                                 {
                                     pyrotechnicsModel:{d:"",m:""},  //火工品型号 
-                                    pyrotechnicsName:"",   //火工品名称 ,
-                                    pyrotechnicsNumber:"", //火工品数量 ,
-                                    pyrotechnicsType:2,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
-                                    pyrotechnicsUnit:"发", // 火工品单位
+                                    pyrotechnicsName:"",            //火工品名称 ,
+                                    pyrotechnicsNumber:"",          //火工品数量 ,
+                                    pyrotechnicsType:2,             //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
+                                    pyrotechnicsUnit:"发",          // 火工品单位
                                 },
                             ],
                             dbg:{
-                                    pyrotechnicsModel:"1",  //火工品型号 
-                                    pyrotechnicsName:"导爆物",   //火工品名称 ,
-                                    pyrotechnicsNumber:"", //火工品数量 ,
-                                    pyrotechnicsType:3,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
-                                    pyrotechnicsUnit:"米", // 火工品单位
+                                    pyrotechnicsModel:"1",           //火工品型号 
+                                    pyrotechnicsName:"导爆物",       //火工品名称 ,
+                                    pyrotechnicsNumber:"",          //火工品数量 ,
+                                    pyrotechnicsType:3,             //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
+                                    pyrotechnicsUnit:"米",          // 火工品单位
                             },
                             dbs:{
-                                    pyrotechnicsModel:"2",  //火工品型号 
-                                    pyrotechnicsName:"导爆物",   //火工品名称 ,
-                                    pyrotechnicsNumber:"", //火工品数量 ,
-                                    pyrotechnicsType:3,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
-                                    pyrotechnicsUnit:"米", // 火工品单位
+                                    pyrotechnicsModel:"2",        //火工品型号 
+                                    pyrotechnicsName:"导爆物",    //火工品名称 ,
+                                    pyrotechnicsNumber:"",       //火工品数量 ,
+                                    pyrotechnicsType:3,          //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
+                                    pyrotechnicsUnit:"米",       // 火工品单位
                             }
                             
                         }
@@ -275,6 +288,9 @@
             toast:toast
         },
         methods:{
+            handleDetail(id){
+                
+            },
             endsub(e){
                 if(e==0){
                     
@@ -463,10 +479,16 @@
                             "page": this.page,
                             "size": this.size,
                         },
+                        "status":this.SearchDTO.status,
                         "userId": this.user.userId
                     },
                     success:(e)=>{
                         console.log(e)
+                       for(let val of e.list){
+                          val.applyTime=this.publics.Filters.timer(val.applyTime)
+                       }
+                       this.total=e.total;
+                       this.dataList=e.list;
                     }
                 })
             },
@@ -493,8 +515,23 @@
             disClose(){
                 this.diaglog.show=false;
             },
-            formatState(){
-
+            formatState(res){
+                let status=["未审批","通过","未通过","已上传许可证"];
+                return status[res.status];
+                
+              /*  let zynum =0,lgnum=0,gysnum=0;
+                for(let val of res.pyrotechnics){
+                    if(val.pyrotechnicsType=="1"){
+                        zynum +=val.pyrotechnicsNumber
+                    }
+                    if(val.pyrotechnicsType=="2"){
+                        lgnum +=val.pyrotechnicsNumber
+                    }
+                    else{
+                        gysnum +=val.pyrotechnicsNumber
+                    }
+                }
+                return "炸药："+zynum+"公斤，雷管："+lgnum+"发，工业索类："+gysnum+"米"*/
             },
             handleSelect(val){
                 this.company=val;

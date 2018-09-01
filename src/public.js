@@ -181,8 +181,7 @@ class AJAX extends Config{
         }
         $put.end((err, res) => {
             let data=res.body || new Filters().tirm(res.text);
-            data=this.field.onoff?JSON.parse(new Commit().decode(data)):data
-            console.log(data)
+            data=this.field.onoff?JSON.parse(new Commit().decode(data)):data;
             this.field.urls.pop()//请求返回 删去该url
             if(data.statusCode==200){
               setTimeout(e=>{loading.close()},1000)
