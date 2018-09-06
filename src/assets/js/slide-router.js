@@ -21,7 +21,7 @@ export default{
         { router:'message',ico:'&#xe61e;',checked:false,id:'e0e1',tit:'消息'},
       ],
       police:[    //公安 
-        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页'},
+        { router:'policeIndex',ico:'&#xe61e;',checked:false,tit:'首页'},
         { router:'management',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
       ],
       logistics:[   //配送

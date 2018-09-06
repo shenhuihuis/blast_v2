@@ -12,7 +12,7 @@
             <div class = 'right'>
                 <div   @click="addNew = true"  class = 'addBtn'>新增车辆</div>
                 <div class = 'serBox'>
-                    <input :class = "showSearch ? 'serActive':'search'" type="text" v-model="carSearchDTO.carNumber"  :placeholder="showSearch ?  '搜索车辆牌照' : '搜索'" @focus="searchAct" @blur="leave">
+                    <input :class = "showSearch ? 'serActive':'search'" type="text" v-model="carSearchDTO.carNumber"  :placeholder="showSearch ?  '请输入车辆牌照' : '搜索'" @focus="searchAct" @blur="leave">
                 </div>
             </div>
         </div>
@@ -91,7 +91,7 @@
                         <el-col :span = '3'>车辆品牌</el-col>
                         <el-col :span = '3'>
                             <el-form-item prop='carBrand'  :rules="[{ required: true }]">
-                                <el-input v-model="newForm.carBrand" @keyup.native="newForm.carNumber=newForm.carNumber.replace(/[^A-Za-z\u4e00-\u9fa5]/g,'')"></el-input>
+                                <el-input v-model="newForm.carBrand" @keyup.native="newForm.carBrand=newForm.carBrand.replace(/[^A-Za-z\u4e00-\u9fa5]/g,'')"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span = '3'>车牌颜色</el-col>
@@ -357,6 +357,7 @@
                 showSearch:false,//是否激活搜索
                 personType:[],//车辆类型下拉
                 carSearchDTO:{
+                    staus:'',
                     carNumber:'',//搜索框 车牌
                     page:1,//车辆类型
                     size:10,//状态
@@ -983,6 +984,11 @@
              height: 36px !important; 
           }    
         }
+       
+    }
+     .el-form .table .el-input__inner{
+            background: none;
+            color:#333;
     }
 }
 </style>

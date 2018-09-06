@@ -76,7 +76,10 @@ html {
 }
 .el-dialog__body{
   height:60vh;
-  overflow:auto
+  overflow:auto;
+}
+.el-dialog{
+  min-width: 1024px;
 }
 // .el-button{
 //   padding: 10px 20px;
@@ -685,4 +688,7 @@ a {
     width:300px;
     margin-left:-150px;
   }
+}
+.el-form-item__label{
+  color:#333!important;
 }

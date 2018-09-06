@@ -82,6 +82,10 @@ html {
   overflow: auto;
 }
 
+.el-dialog {
+  min-width: 1024px;
+}
+
 @-webkit-keyframes wobble {
   0% {
     box-shadow: 0px 0px 3px inset rgba(64, 158, 255, 0.4);
@@ -716,4 +720,38 @@ a {
   font-size: 14px;
   text-align: center;
   line-height: 32px;
+}
+
+.toast {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  height: 100%;
+  z-index: 2600;
+  background: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.toast .img {
+  position: absolute;
+  left: 10%;
+  width: 80%;
+  height: 100%;
+}
+
+.toast .img img {
+  max-width: 100%;
+}
+
+.toast .button {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  width: 300px;
+  margin-left: -150px;
+}
+
+.el-form-item__label {
+  color: #333 !important;
 }

@@ -32,7 +32,7 @@
     HappyScroll
   } from 'vue-happy-scroll'
   import 'vue-happy-scroll/docs/happy-scroll.css'
-  export default {
+  export default {  
     props: ["current"],     //sign
     data() {
       return {

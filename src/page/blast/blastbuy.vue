@@ -13,7 +13,7 @@
                 <div class = 'right'>
                     <div  @click="addNewForm" class="addBtn" style="display:inline-block;">新增</div>
                     <div class = 'serBox'>
-                        <input :class = "SearchDTO.showSearch ? 'serActive':'search'" type="text" v-model="SearchDTO.multiCondition" :placeholder="SearchDTO.showSearch ?  '请输入项目名' : '搜索'" @focus="searchAct" @blur="leave">
+                        <input :class = "SearchDTO.showSearch ? 'serActive':'search'" type="text" v-model="SearchDTO.multiCondition" :placeholder="SearchDTO.showSearch ?  '请输入项目名称' : '搜索'" @focus="searchAct" @blur="leave">
                     </div>
                 </div>
             </div>
@@ -54,23 +54,30 @@
                 </div>
             </div>
         </div>
-        <el-dialog :title="diaglog.title" :visible.sync="diaglog.show"  :before-close="disClose" id="node">
+        <el-dialog :title="diaglog.title" :visible.sync="diaglog.show"  :before-close="disClose" id="node"  :close-on-click-modal = "false" :close-on-press-escape = 'false'>
             <div v-if="show==2">
-                <table  border="1" class="table" width="100%" >
-                    <tr>
-                        <td width='100'>项目：</td>
-                        <td width="200"> 
-                            <span v-if="company.projectName">{{company.projectName}}</span>
-                            <el-autocomplete  popper-class="my-autocomplete"  v-model="diaglog.state" :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect" v-else>
-                                <template slot-scope="{ item }"><div class="name">{{ item.value }}</div></template>
-                            </el-autocomplete>
-                        </td>
-                        <td width="100">项目级别：</td>
-                        <td width="150">{{publics.Filters.convert(company.projectLevel || 0).projectLevel()}} ,第   {{company.order || 0}}   次购买</td>
-                        <td width="100">仓库：</td>
-                        <td width="150">{{company.warehouseName}}</td>
-                    </tr>
-                </table>
+                 <el-form ref="form" :model="form"  label-width="0" class="project-form" style="margin:-20px 0 20px 0;">
+                    <el-row :gutter="40">
+                        <el-col :span="12">
+                            <el-form-item label="项目：" label-width="140" >
+                                <el-autocomplete  popper-class="my-autocomplete"  v-model="diaglog.state" :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect" style="width:100%;">
+                                    <template slot-scope="{ item }"><div class="name">{{ item.value }}</div></template>
+                                </el-autocomplete>
+                            </el-form-item>
+                            <el-form-item label="项目级别：" label-width="140">
+                                <el-input v-model="publics.Filters.convert(company.projectLevel || 0).projectLevel()" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="第几次购买：" label-width="140">
+                                <el-input  v-model="company.order || 0" style="width: 100%;" :disabled="true"></el-input>
+                            </el-form-item>
+                            <el-form-item label="仓库：" label-width="140" >
+                                <el-input v-model="company.warehouseName" style="width: 100%;" :disabled="true"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
                 <table  border="1" class="table" width="100%"  v-if="blastlist">
                     <thead>
                         <td colspan="9">项目物品信息</td>
@@ -83,13 +90,13 @@
                             <span v-if="i.type==3">项目库余量</span>  
                             </td>
                             <td width='100'>炸药</td>
-                            <td width='150'>{{i.zaYao}}</td>
+                            <td width='150'>{{i.zaYao}}千克</td>
                             <td>雷管</td>
-                            <td width='100'>{{i.leiGuan}}</td>
+                            <td width='100'>{{i.leiGuan}}发</td>
                             <td>导爆管</td>
-                            <td width='100'>{{i.daoBaoGuan}}</td>
+                            <td width='100'>{{i.daoBaoGuan}}米</td>
                             <td>导爆索</td>
-                            <td width='100'>{{i.daoBaoSuo}}</td>
+                            <td width='100'>{{i.daoBaoSuo}}米</td>
                         </tr>
                     </tbody>
                 </table>
@@ -100,11 +107,11 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td :rowspan="form.blastlist.zy.length+1" colspan="2" width="120">炸药</td>
-                                <td width="180">品名</td>
-                                <td width="180">型号</td>
-                                <td width="180">数量（kg）</td>
-                                <td width="180">操作</td>
+                                <td :rowspan="form.blastlist.zy.length+1" colspan="2" width="80">炸药</td>
+                                <td width="280">品名</td>
+                                <td width="200">型号</td>
+                                <td width="160">数量（千克）</td>
+                                <td width="80">操作</td>
                             </tr>
                             <tr v-for="(i,index) in form.blastlist.zy">
                                 <td>
@@ -113,15 +120,16 @@
                                     </el-select>
                                 </td>
                                 <td>
-                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsModel'" :rules="[{required: true}]"  class="li" >
-                                        <el-input v-model="i.pyrotechnicsModel" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,0)"></el-input>
+                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsModel'" :rules="[{required: true}]"  class="li" v-if="i.pyrotechnicsName">
+                                        <el-input v-model="i.pyrotechnicsModel"  @keyup.native="i.pyrotechnicsModel=i.pyrotechnicsModel.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"   @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,0)"></el-input>
                                     </el-form-item>
                                 </td>
                                 <td>
-                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
-                                        <el-input v-model="i.pyrotechnicsNumber"></el-input>
+                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li"  v-if="i.pyrotechnicsName">
+                                        <el-input v-model="i.pyrotechnicsNumber" @keyup.native="i.pyrotechnicsNumber=i.pyrotechnicsNumber.replace(/\D/g,'')"  ></el-input>
                                     </el-form-item>
                                 </td>
+        
                                 <td>
                                     <i class="el-icon-plus"  title="新增" @click="addblast(0,index)" v-if="form.blastlist.zy.length==index+1"></i>
                                     <i class="el-icon-minus" title="删除" @click="badelete(0,index)" v-if="index>0"></i>
@@ -136,23 +144,23 @@
                             </tr>
                             <tr  v-for="(i,index) in form.blastlist.lg" >
                                 <td>
-                                    <el-select v-model="i.pyrotechnicsName" placeholder="">
+                                    <el-select v-model="i.pyrotechnicsName" placeholder="请选择">
                                         <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.lgtype" :key="j"></el-option>
                                     </el-select>
                                 </td>
                                 <td>
                                     <div  class="lgsml">
-                                        <el-input v-model="i.pyrotechnicsModel.d">
+                                        <el-input v-model="i.pyrotechnicsModel.d" @keyup.native="i.pyrotechnicsModel.d=i.pyrotechnicsModel.d.replace(/\D/g,'')" v-if="i.pyrotechnicsName">
                                             <template slot="append">段</template>
                                         </el-input>
-                                        <el-input v-model="i.pyrotechnicsModel.m" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,1)">
+                                        <el-input v-model="i.pyrotechnicsModel.m"  @keyup.native="i.pyrotechnicsModel.m=i.pyrotechnicsModel.m.replace(/\D/g,'')" v-if="i.pyrotechnicsName" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,1)">
                                             <template slot="append">米</template>
                                         </el-input>
                                     </div>
                                 </td>
                                 <td>
-                                    <el-form-item  :prop="'blastlist.lg.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
-                                        <el-input v-model="i.pyrotechnicsNumber"></el-input>
+                                    <el-form-item  :prop="'blastlist.lg.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]" v-if="i.pyrotechnicsName" class="li">
+                                        <el-input v-model="i.pyrotechnicsNumber" @keyup.native="i.pyrotechnicsNumber=i.pyrotechnicsNumber.replace(/\D/g,'')"></el-input>
                                     </el-form-item>
                                 </td>
                                 <td>
@@ -161,107 +169,29 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td width="100" colspan="2">工业索类</td>
+                                <td width="100" colspan="2" rowspan="2">工业索类</td>
                                 <td width="140">导爆索</td>
                                 <td width="100">
                                     <el-form-item  label-width="0" >
-                                        <el-input v-model="form.blastlist.dbg.pyrotechnicsNumber">
+                                        <el-input v-model="form.blastlist.dbs.pyrotechnicsNumber" @keyup.native="form.blastlist.dbs.pyrotechnicsNumber=form.blastlist.dbs.pyrotechnicsNumber.replace(/\D/g,'')">
                                                 <template slot="append">米</template>
                                         </el-input>
                                     </el-form-item>
                                 </td>
+                                <td colspan="2">/</td>
+                            </tr>
+                            <tr>
                                 <td width="50">导爆管</td>
                                 <td width="100">
                                     <el-form-item  label-width="0" >
-                                        <el-input v-model="form.blastlist.dbs.pyrotechnicsNumber">
+                                        <el-input v-model="form.blastlist.dbg.pyrotechnicsNumber" @keyup.native="form.blastlist.dbg.pyrotechnicsNumber=form.blastlist.dbg.pyrotechnicsNumber.replace(/\D/g,'')">
                                                 <template slot="append">米</template>
                                         </el-input>
                                     </el-form-item>
                                 </td>
+                                <td colspan="2">/</td>
                             </tr>
                         </tbody>
-                        <!-- <tbody v-else>
-                            <tr>
-                                <td :rowspan="form.blastlist.zy.length+1" colspan="2" width="120">炸药</td>
-                                <td width="180">品名</td>
-                                <td width="180">型号</td>
-                                <td width="180">数量（kg）</td>
-                                <td width="180">操作</td>
-                            </tr>
-                            <tr v-for="(i,index) in form.blastlist.zy">
-                                <td>
-                                    <el-select v-model="i.pyrotechnicsName">
-                                        <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.zytype" :key="j"></el-option>
-                                    </el-select>
-                                </td>
-                                <td>
-                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsModel'" :rules="[{required: true}]"  class="li" >
-                                        <el-input v-model="i.pyrotechnicsModel" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,0)"></el-input>
-                                    </el-form-item>
-                                </td>
-                                <td>
-                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
-                                        <el-input v-model="i.pyrotechnicsNumber"></el-input>
-                                    </el-form-item>
-                                </td>
-                                <td>
-                                    <i class="el-icon-plus"  title="新增" @click="addblast(0,index)" v-if="form.blastlist.zy.length==index+1"></i>
-                                    <i class="el-icon-minus" title="删除" @click="badelete(0,index)" v-if="index>0"></i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td :rowspan="form.blastlist.lg.length+1" colspan="2" width="100">雷管</td>
-                                <td>类型</td>
-                                <td>段别</td>
-                                <td>数量（发)</td>
-                                <td>操作</td>
-                            </tr>
-                            <tr  v-for="(i,index) in form.blastlist.lg" >
-                                <td>
-                                    <el-select v-model="i.pyrotechnicsName" placeholder="">
-                                        <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.lgtype" :key="j"></el-option>
-                                    </el-select>
-                                </td>
-                                <td>
-                                    <div  class="lgsml">
-                                        <el-input v-model="i.pyrotechnicsModel.d">
-                                            <template slot="append">段</template>
-                                        </el-input>
-                                        <el-input v-model="i.pyrotechnicsModel.m" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,1)">
-                                            <template slot="append">米</template>
-                                        </el-input>
-                                    </div>
-                                </td>
-                                <td>
-                                    <el-form-item  :prop="'blastlist.lg.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
-                                        <el-input v-model="i.pyrotechnicsNumber"></el-input>
-                                    </el-form-item>
-                                </td>
-                                <td>
-                                    <i class="el-icon-plus"  title="新增" @click="addblast(1,index)" v-if="form.blastlist.lg.length==index+1"></i>
-                                    <i class="el-icon-minus" title="删除" @click="badelete(1,index)" v-if="index>0"></i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="100" colspan="2">工业索类</td>
-                                <td width="140">导爆索</td>
-                                <td width="100">
-                                    <el-form-item  label-width="0" >
-                                        <el-input v-model="form.blastlist.dbg.pyrotechnicsNumber">
-                                                <template slot="append">米</template>
-                                        </el-input>
-                                    </el-form-item>
-                                </td>
-                                <td width="50">导爆索</td>
-                                <td width="100">
-                                    <el-form-item  label-width="0" >
-                                        <el-input v-model="form.blastlist.dbs.pyrotechnicsNumber">
-                                                <template slot="append">米</template>
-                                        </el-input>
-                                    </el-form-item>
-                                </td>
-                            </tr>
-                        </tbody> -->
                     </table>
                 </el-form>
                 <div class="subbtn" v-if="blastlist && !test.show">
@@ -269,15 +199,15 @@
                 </div>
             </div>
             <div v-else>        <!--查看-->
-                 <table  border="1" class="table" width="100%" >
+                 <table border="1" class="table" width="100%" >
                     <tr>
                         <td width='100'>项目：</td>
                         <td width="200"> 
                             <span>{{details.projectName}}</span>
                         </td>
-                        <td width="100">项目级别：</td>
+                        <td width="100">项目级别</td>
                         <td width="150">{{publics.Filters.convert(details.projectLevel).projectLevel()}} ,第   {{details.order}}   次购买</td>
-                        <td width="100">仓库：</td>
+                        <td width="100">仓库</td>
                         <td width="150">{{details.warehouseName}}</td>
                     </tr>
                 </table>
@@ -293,41 +223,38 @@
                             <span v-if="i.type==3">项目库余量</span>  
                             </td>
                             <td width='100'>炸药</td>
-                            <td width='150'>{{i.zaYao}}</td>
+                            <td width='150'>{{i.zaYao}}千克</td>
                             <td>雷管</td>
-                            <td width='100'>{{i.leiGuan}}</td>
+                            <td width='100'>{{i.leiGuan}}发</td>
                             <td>导爆管</td>
-                            <td width='100'>{{i.daoBaoGuan}}</td>
+                            <td width='100'>{{i.daoBaoGuan}}米</td>
                             <td>导爆索</td>
-                            <td width='100'>{{i.daoBaoSuo}}</td>
+                            <td width='100'>{{i.daoBaoSuo}}米</td>
                         </tr>
                     </tbody>
                 </table>
 
                     <table  border="1" class="table" width="100%"  v-if="details.blastlist">
                         <thead>
-                            <td colspan="6">购买物品信息</td>
+                            <td colspan="5">购买物品信息</td>
                         </thead>
                         <tbody>
                             <tr>
-                                <td :rowspan="details.blastlist.zy.length+1" colspan="2" width="60">炸药</td>
+                                <td :rowspan="form.blastlist.zy.length+1" colspan="2" width="140">炸药</td>
                                 <td width="240">品名</td>
                                 <td width="240">型号</td>
-                                <td width="240">数量（kg）</td>
-                                <td></td>
+                                <td width="240">数量（ 千克 ）</td>
                             </tr>
                             <tr v-for="(i,index) in details.blastlist.zy">
                                 <td>{{i.pyrotechnicsName}}</td>
                                 <td>{{i.pyrotechnicsModel}}</td>
                                 <td>{{i.pyrotechnicsNumber}}</td>
-                                <td></td>
                             </tr>
                             <tr>
                                 <td :rowspan="details.blastlist.lg.length+1" colspan="2" width="60">雷管</td>
                                 <td>类型</td>
                                 <td>段别</td>
-                                <td>数量（发)</td>
-                                <td></td>
+                                <td>数量（发）</td>
                             </tr>
                             <tr  v-for="(i,index) in details.blastlist.lg" >
                                 <td>{{i.pyrotechnicsName}}</td>
@@ -342,33 +269,67 @@
                                     </div>
                                 </td>
                                 <td>{{i.pyrotechnicsNumber}}</td>
-                                <td></td>
                             </tr>
                             <tr>
-                                <td width="100" colspan="2">工业索类</td>
+                                <td width="100" colspan="2" rowspan="2">工业索类</td>
                                 <td width="140">导爆索</td>
                                 <td width="100">
-                                        <el-input v-model="details.blastlist.dbg.pyrotechnicsNumber || 0">
-                                                <template slot="append">米</template>
-                                        </el-input>
+                                    <el-input v-model="details.blastlist.dbs.pyrotechnicsNumber || 0" :disabled="true">
+                                        <template slot="append">米</template>
+                                    </el-input>
                                 </td>
-                                <td width="50">导爆管</td>
+                                <td>/</td>
+                            </tr>
+                            <tr>
+                                 <td width="50">导爆管</td>
                                 <td width="100">
-                                        <el-input v-model="details.blastlist.dbs.pyrotechnicsNumber || 0">
-                                                <template slot="append">米</template>
-                                        </el-input>
+                                    <el-input v-model="details.blastlist.dbg.pyrotechnicsNumber || 0" :disabled="true">
+                                        <template slot="append">米</template>
+                                    </el-input>
                                 </td>
+                                <td>/</td>
                             </tr>
                         </tbody>
                     </table>
             </div>
+            <div class="upbook" v-if="details.status>0">
+                <div class="h2">审核信息</div>
+                <div class="psinfo" v-if="details.status==1">
+                      <el-form :model="newForm" ref = "newForm" :rules="rules" >
+                        <el-row :gutter="40">
+                            <el-col :span="12">
+                                <el-form-item label="运输起点" label-width="80" prop='startAddress'  :rules="[{ required: true, message: '运输起点不能为空'}]">
+                                    <el-input v-model="newForm.startAddress" @keyup.native="newForm.startAddress = newForm.startAddress.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
+                                </el-form-item>
+                                <el-form-item label="运输终点" label-width="80">
+                                    <el-input v-model="details.warehouseName" :disabled="true"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="有效期至" label-width="80" prop='validityTime'  :rules="[{ required: true, message: '有效期不能为空'}]">
+                                    <el-date-picker type="date" v-model="newForm.validityTime" style="width: 100%;"></el-date-picker>
+                                </el-form-item>
+                                <el-form-item label="配送时间" label-width="80" prop='transportTime'  :rules="[{ required: true, message: '运输终点不能为空'}]">
+                                    <el-date-picker type="date" v-model="newForm.transportTime" style="width: 100%;"></el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                             <el-col :span = '12'>
+                                <el-form-item label="驾驶证照片（反面）" prop="regLicense" :rules="[{ required: true, message: '请上传照片'}]" >
+                                    <div class="uploadpic">
+                                        <File :data="upload[0]" @bindValue="newForm.regLicense = upload[0].url" ></File>
+                                    </div>
+                                </el-form-item>
+                            </el-col>
+                        
+                        </el-row>
+                    </el-form>
+                </div>
+            </div>
         </el-dialog> 
-        <toast v-bind:img="test" @tosub="endsub"></toast>
     </div>
 </template>
 <script>
-    import toast from "../../components/toast";
-    import domtoimage from "dom-to-image";
+    import file from "../../components/upload";
     export default {
         data(){
             return {
@@ -379,6 +340,7 @@
                 page:1,
                 size:10,
                 total:0,
+
                 SearchDTO:{
                     multiCondition:'',//搜索框
                     status:'',//状态
@@ -400,7 +362,14 @@
                      state:''
                 },
                 details:{},
-                form:{
+                newForm:{
+                    startAddress:"",
+                    validityTime:"",
+                    transportTime:"",
+                    regLicense:""
+                },             //上传许可证form
+                upload:[{type:0,dataurl:'',url:''}],
+                form:{                  //购买初始form
                        blasttype:{              //炸药类型
                             lgtype:[],           //雷管类型
                             zytype:[]            //炸药类型
@@ -411,7 +380,7 @@
                                     pyrotechnicsName:"",            //火工品名称 ,
                                     pyrotechnicsNumber:"",          //火工品数量 ,
                                     pyrotechnicsType:1,             //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
-                                    pyrotechnicsUnit:"Kg",          // 火工品单位
+                                    pyrotechnicsUnit:"千克",          // 火工品单位
                                 }, 
                             ],
                             lg:[
@@ -465,7 +434,7 @@
             })
         },
         components:{
-            toast:toast
+            File:file
         },
         methods:{
             handleDetail(id){
@@ -500,40 +469,31 @@
                     }
                 })
             },
-            endsub(e){
-                if(e==0){
-                        this.publics.AJAX.$POST({
-                            url:"purchase/buy",
-                            data:this.dto,
-                            success:(e)=>{
-                                this.diaglog.show=false;
-                                this.$message({
-                                    type:"success",
-                                    message:"购买成功！"
-                                })
-                                setTimeout(e=>{
-                                    window.history.go(0)
-                                },1000)
-                            }   
-                        })
-                }else{
-                    this.test={
-                        show:false,
-                        src:""
-                    }
-                }
-            },
             sub(formName){
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let zyNum=0,lgNum=0;
                         for(let val of this.form.blastlist.zy){
+                            if(!val.pyrotechnicsNumber || !val.pyrotechnicsModel){
+                                this.$message({
+                                    message:"请填写完炸药信息！",
+                                    type:"error"
+                                })
+                                return false;
+                            }
                             zyNum +=parseInt(val.pyrotechnicsNumber)
                         }
                         for(let val of this.form.blastlist.lg){
                             lgNum +=parseInt(val.pyrotechnicsNumber)
                         }
                         if(zyNum>this.blastlist[1].zaYao){
+                             if(!val.pyrotechnicsNumber ){
+                                this.$message({
+                                    message:"请填写完雷管信息！",
+                                    type:"error"
+                                })
+                                return false;
+                            }
                             this.$message({
                                 message:"炸药超过购买量",
                                 type:"error"
@@ -549,7 +509,7 @@
                             return false;
                         }
                         //daoBaoSuo
-                    
+                        
                         if(parseInt(this.form.blastlist.dbg.pyrotechnicsNumber)>this.blastlist[1].daoBaoGuan){
                             this.$message({
                                 message:"导爆管超过购买量",
@@ -571,31 +531,41 @@
                         }
                         let pyrotechnics=[...cloneblast.zy,...cloneblast.lg];
                         if(parseInt(this.form.blastlist.dbs.pyrotechnicsNumber)>0){
-                            pyrotechnics.push(cloneblast.dbg)
+                            pyrotechnics.push(cloneblast.dbs)
                         }
                         if(parseInt(this.form.blastlist.dbg.pyrotechnicsNumber)>0){
-                            pyrotechnics.push(cloneblast.dbs)
+                            pyrotechnics.push(cloneblast.dbg)
                         }
                         let dto = {
                             "createMan": this.user.userId,
                             "projectId": this.company.projectId,
                             "pyrotechnics":pyrotechnics
                         }
-                        let load=this.$loading({
-                            text:'生成预览中,请稍等'
-                        })
-                        this.test.show=true;
-                        setTimeout(e=>{
-                            let node=document.getElementById("node");
-                            domtoimage.toPng(node)
-                            .then(dataUrl=>{
-                                load.close();
-                                this.test.src=dataUrl;
-                                this.dto=dto;
+                        this.$confirm('申请购买, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                              this.publics.AJAX.$POST({
+                                url:"purchase/buy",
+                                data:dto,
+                                success:(e)=>{
+                                    this.diaglog.show=false;
+                                    this.$message({
+                                        type:"success",
+                                        message:"购买成功！"
+                                    })
+                                    setTimeout(e=>{
+                                        window.history.go(0)
+                                    },1000)
+                                }   
                             })
-                        },1000)
-                       
+                        })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
                     }
+                      
                 })
             },
             zyblur(index,pyrotechnicsModel,pyrotechnicsName,type){
@@ -634,15 +604,25 @@
                         });
                     })
                 }else{
-
+                     this.$confirm('此操作将删除此条雷管新增, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.form.blastlist.lg.splice(index,1);
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    })
                 }
             },
             addblast(like,index){
                 if(like==0){
                     for(let val of this.form.blastlist.zy){
-                        if(!val.pyrotechnicsModel){ this.$message({type:"error",message:"请输入炸药型号"});return false;}
-                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"请输入炸药数量"});return false;}
-                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"请选择炸药类型"});return false;}
+                        if(!val.pyrotechnicsModel){ this.$message({type:"error",message:"信息需调整"});return false;}
+                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"信息需调整"});return false;}
+                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"信息需调整"});return false;}
                     }
                     let key={           
                         pyrotechnicsModel:"",  
@@ -655,9 +635,9 @@
                 }else{
                      for(let val of this.form.blastlist.lg){
                         console.log(val)
-                        if(!val.pyrotechnicsModel.d || !val.pyrotechnicsModel.m){ this.$message({type:"error",message:"请输入雷管段别"});return false;}
-                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"请输入雷管数量"});return false;}
-                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"请选择雷管类型"});return false;}
+                        if(!val.pyrotechnicsModel.d || !val.pyrotechnicsModel.m){ this.$message({type:"error",message:"信息需调整"});return false;}
+                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"信息需调整"});return false;}
+                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"信息需调整"});return false;}
                     }
                     let key={           
                         pyrotechnicsModel:{d:"",m:""},  
@@ -722,6 +702,7 @@
             },
             disClose(){
                 this.show=0;
+                this.diaglog.state="";
                 this.diaglog.show=false;
             },
             formatState(res){
@@ -748,6 +729,9 @@
             },
             addNewForm(){
                 this.show=2;
+                this.details={};
+                this.company={};
+                this.blastlist=null;
                 this.diaglog.show=true;
             },
             querySearch(queryString, cb) {
@@ -891,6 +875,15 @@
         .subbtn{
             margin-top:30px;
             text-align: center;
+        }
+        .el-input.is-disabled .el-input__inner{
+            background: none;
+            text-align: center;
+            color:#333;
+        }
+        .uploadpic{
+            width:200px;
+            height:200px;
         }
     }
 </style>

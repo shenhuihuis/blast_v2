@@ -12,7 +12,7 @@
                     <td width="100">项目名称</td>
                     <td width="60" colspan="3">
                         <el-form-item  prop="name" label-width="0" :rules="[{ required: true}]">
-                            <el-input v-model="form.name" @keyup.native="form.name=form.name.replace(/[^\u4e00-\u9fa5]/g,'')"></el-input>
+                            <el-input v-model="form.name" @keyup.native="form.name=form.name.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                         </el-form-item>
                     </td>
                     <td width="80">项目级别</td>
@@ -29,28 +29,28 @@
                     </td>
                     <td width="80">审批时间</td>
                     <td width="120">
-                            <el-form-item  prop="examineTime" label-width="0" :rules="[{ required: true}]">
-                                <el-date-picker v-model="form.examineTime" type="date"  placeholder="选择日期" value-format="timestamp" ></el-date-picker>
-                            </el-form-item>
+                        <el-form-item  prop="examineTime" label-width="0" :rules="[{ required: true}]">
+                            <el-date-picker v-model="form.examineTime" type="date"  placeholder="选择日期" value-format="timestamp"   :picker-options="pickerOptions0"></el-date-picker>
+                        </el-form-item>
                     </td>
                     </tr>
                     <tr>
                         <td width="100">委托单位</td>
                         <td width="120">
                             <el-form-item  prop="trustorName" label-width="0" :rules="[{ required: true}]" > 
-                                <el-input v-model="form.trustorName" @keyup.native="form.trustorName=form.trustorName.replace(/[^\u4e00-\u9fa5]/g,'')"></el-input>
+                                <el-input v-model="form.trustorName" @keyup.native="form.trustorName=form.trustorName.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                         </td>
                         <td width="120">委托单位法人</td>
                         <td width="60">
                             <el-form-item  prop="trustorLegal" label-width="0" :rules="[{ required: true}]">
-                                <el-input v-model="form.trustorLegal" @keyup.native="form.trustorLegal=form.trustorLegal.replace(/[^\u4e00-\u9fa5]/g,'')"></el-input>
+                                <el-input v-model="form.trustorLegal" @keyup.native="form.trustorLegal=form.trustorLegal.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                         </td>
                         <td width="80">委托人</td>
                         <td width="120">
                             <el-form-item  prop="trustorStaff" label-width="0" :rules="[{ required: true}]">
-                                <el-input v-model="form.trustorStaff" @keyup.native="form.trustorStaff=form.trustorStaff.replace(/[^\u4e00-\u9fa5]/g,'')"></el-input>
+                                <el-input v-model="form.trustorStaff" @keyup.native="form.trustorStaff=form.trustorStaff.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                         </td>
                         <td width="80">委托人手机</td>
@@ -80,7 +80,7 @@
                         <td width="80">作业时间</td>
                         <td width="280">
                             <el-form-item prop="worktime" label-width="0" :rules="[{ required: true}]" >
-                                <el-date-picker  v-model="form.worktime"  type="datetimerange" @change="dataFloat"  start-placeholder="开始日期"  value-format="timestamp" end-placeholder="结束日期"></el-date-picker>
+                                <el-date-picker v-model="form.worktime"  type="datetimerange" @change="dataFloat"  start-placeholder="开始日期"  value-format="timestamp" end-placeholder="结束日期" :picker-options="pickerOptions0"></el-date-picker>
                             </el-form-item>
                             
                         </td>
@@ -181,13 +181,13 @@
                         <td width="180">单位名称</td>
                         <td width="402">
                             <el-form-item prop="projectSecurityAndSupervisor[0].companyName" label-width="0" :rules="[{ required: true}]" > 
-                                <el-input v-model="form.projectSecurityAndSupervisor[0].companyName"  @keyup.native="form.projectSecurityAndSupervisor[0].companyName=form.projectSecurityAndSupervisor[0].companyName.replace(/^\d+(\.\d+)?$/,'')" ></el-input>
+                                <el-input v-model="form.projectSecurityAndSupervisor[0].companyName"  @keyup.native="form.projectSecurityAndSupervisor[0].companyName=form.projectSecurityAndSupervisor[0].companyName.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')" ></el-input>
                             </el-form-item>
                         </td>
                         <td width="180"  colspan="2">单位许可证编号</td>
                         <td width="402">
                             <el-form-item  prop="projectSecurityAndSupervisor[0].licenceNumber"  label-width="0" :rules="[{ required: true}]" > 
-                                <el-input v-model="form.projectSecurityAndSupervisor[0].licenceNumber" ></el-input>
+                                <el-input v-model="form.projectSecurityAndSupervisor[0].licenceNumber" @keyup.native="form.projectSecurityAndSupervisor[0].licenceNumber=form.projectSecurityAndSupervisor[0].licenceNumber.replace(/\D/g,'')" ></el-input>
                             </el-form-item>
                         </td>
                     </tr>
@@ -195,14 +195,14 @@
                         <td >单位资质</td>
                         <td>
                             <el-form-item  prop="projectSecurityAndSupervisor[0].workingRange" label-width="0"  :rules="[{ required: true}]" > 
-                                <el-input v-model="form.projectSecurityAndSupervisor[0].workingRange"></el-input>
+                                <el-input v-model="form.projectSecurityAndSupervisor[0].workingRange" @keyup.native="form.projectSecurityAndSupervisor[0].workingRange=form.projectSecurityAndSupervisor[0].workingRange.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')" ></el-input>
                             </el-form-item>
                         
                         </td>
                         <td colspan="2">许可证有效期</td>
                         <td>
                             <el-form-item prop="projectSecurityAndSupervisor[0].licenceExpireTime"  label-width="0" :rules="[{ required: true}]">
-                                <el-date-picker v-model="form.projectSecurityAndSupervisor[0].licenceExpireTime " type="date"  value-format="timestamp"  placeholder="选择日期"  ></el-date-picker>
+                                  <el-date-picker v-model="form.projectSecurityAndSupervisor[0].licenceExpireTime" type="date"  value-format="timestamp"  placeholder="选择日期" :picker-options="pickerOptions0" ></el-date-picker>
                             </el-form-item>
                         </td>
                     </tr>
@@ -229,7 +229,7 @@
                         <td width="180">单位名称</td>
                         <td width="402">
                         <el-form-item label-width="0" :rules="[{ required: true}]"  class="sml"> 
-                                <el-input v-model="form.projectSecurityAndSupervisor[1].companyName"  @keyup.native="form.projectSecurityAndSupervisor[1].companyName=form.projectSecurityAndSupervisor[1].companyName.replace(/^\d+(\.\d+)?$/,'')"></el-input>
+                                <el-input v-model="form.projectSecurityAndSupervisor[1].companyName"  @keyup.native="form.projectSecurityAndSupervisor[1].companyName=form.projectSecurityAndSupervisor[1].companyName.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                             <a href="javascript:void(0);" class="find" @click="findCompany(0,form.projectSecurityAndSupervisor[1].companyName,1)" v-if="show==0">搜索</a>
                         </td>
@@ -240,7 +240,7 @@
                         <td>单位资质</td>
                         <td>{{form.projectSecurityAndSupervisor[1].workingRange}}</td>
                         <td colspan="2">许可证有效期</td>
-                        <td>{{publics.Filters.timer(form.projectSecurityAndSupervisor[1].licenceExpireTime)}}</td>
+                        <td><span v-if="form.projectSecurityAndSupervisor[1].licenceExpireTime">{{publics.Filters.timer(form.projectSecurityAndSupervisor[1].licenceExpireTime)}}</span></td>
                     </tr>
                     <tr>
                         <td width="120"></td>
@@ -266,8 +266,8 @@
                         </thead>
                         <tr>
                             <td width="300">方位</td>
-                            <td width="300">被保护对象</td>
-                            <td width="300">层核定安全距离</td>
+                            <td width="300">被保护对象（米/m）</td>
+                            <td width="300">核定安全距离</td>
                         </tr>
                         <tr class="point" @click="diaglog.type=1;diaglog.show=true;diaglog.title='安全警戒距离'" v-for="i in form.cautionDtoList" v-if="show==0">
                             <td>{{i.position}}</td>
@@ -289,39 +289,41 @@
                         <td>运输公司</td>
                         <td colspan="4" width="402">
                             <el-form-item  prop="companyIdList[0].companyName" label-width="0" :rules="[{ required: true}]"  style="width:80%;float:left;"> 
-                                <el-input v-model="form.companyIdList[0].companyName"></el-input>
+                                <el-input v-model="form.companyIdList[0].companyName" @keyup.native="form.companyIdList[0].companyName=form.companyIdList[0].companyName.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
-                            <a href="javascript:void(0);" class="find"  @click="findCompany(1,form.companyIdList[0].companyName,2)" v-if="show==0">搜索</a>
+                            <el-button size="small" icon="el-icon-search" circle @click="findCompany(1,form.companyIdList[0].companyName,2)" v-if="show==0 && !form.companyIdList[0].companyId"style="margin-top:4px">搜索</el-button>
+                            <a href="javascript:void(0);" class="find"  @click="form.companyIdList[0].companyId=null" v-if="show==0 && form.companyIdList[0].companyId">重置</a>
                         </td>
-                        <td>仓储公司</td>
+                        <td>仓储名称</td>
                         <td colspan="4" width="402">
                             <el-form-item  prop="companyIdList[1].companyName" label-width="0" :rules="[{ required: true}]"  style="width:80%;float:left;"> 
-                                <el-input v-model="form.companyIdList[1].companyName"></el-input>
+                                <el-input v-model="form.companyIdList[1].companyName" @keyup.native="form.companyIdList[1].companyName=form.companyIdList[1].companyName.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
-                            <a href="javascript:void(0);" class="find"  @click="findCompany(2,form.companyIdList[1].companyName,3)" v-if="show==0">搜索</a>
+                            <el-button size="small" icon="el-icon-search" circle @click="findCompany(2,form.companyIdList[1].companyName,3)" v-if="show==0 && !form.companyIdList[1].companyId" style="margin-top:4px">搜索</el-button>
+                            <a href="javascript:void(0);" class="find"  @click="form.companyIdList[1].companyId=null" v-if="show==0 && form.companyIdList[1].companyId">重置</a>
                         </td>
                     </tr>
                     <tr>
                         <td width="180">民爆物品</td>
-                        <td width="124">炸药</td>
+                        <td width="124">炸药（千克）</td>
                         <td width="124">
                             <el-form-item  prop="projectPyrotechnicsList[0].pyrotechnicsNumber" label-width="0" :rules="[{ required: true}]"  style="width:100%;"> 
                                 <el-input v-model="form.projectPyrotechnicsList[0].pyrotechnicsNumber"  @keyup.native="form.projectPyrotechnicsList[0].pyrotechnicsNumber=form.projectPyrotechnicsList[0].pyrotechnicsNumber.replace(/\D/g,'')"></el-input>
                             </el-form-item> 
                         </td>
-                        <td width="124">雷管</td>
+                        <td width="124">雷管（发）</td>
                         <td width="124">
                             <el-form-item  prop="projectPyrotechnicsList[0].pyrotechnicsNumber" label-width="0" :rules="[{ required: true}]"  style="width:100%;"> 
                                 <el-input v-model="form.projectPyrotechnicsList[1].pyrotechnicsNumber"  @keyup.native="form.projectPyrotechnicsList[1].pyrotechnicsNumber=form.projectPyrotechnicsList[1].pyrotechnicsNumber.replace(/\D/g,'')"></el-input>
                             </el-form-item> 
                         </td>
-                        <td width="124">导爆管</td>
+                        <td width="124">导爆管（米）</td>
                         <td width="124">
                             <el-form-item  prop="projectPyrotechnicsList[0].pyrotechnicsNumber" label-width="0" :rules="[{ required: true}]"  style="width:100%;"> 
                                 <el-input v-model="form.projectPyrotechnicsList[2].pyrotechnicsNumber"  @keyup.native="form.projectPyrotechnicsList[2].pyrotechnicsNumber=form.projectPyrotechnicsList[2].pyrotechnicsNumber.replace(/\D/g,'')"></el-input>
                             </el-form-item> 
                         </td>
-                        <td width="124">导爆索</td>
+                        <td width="124">导爆索（米）</td>
                         <td width="124">
                             <el-form-item  prop="projectPyrotechnicsList[0].pyrotechnicsNumber" label-width="0" :rules="[{ required: true}]"  style="width:100%;"> 
                                 <el-input v-model="form.projectPyrotechnicsList[3].pyrotechnicsNumber"  @keyup.native="form.projectPyrotechnicsList[3].pyrotechnicsNumber=form.projectPyrotechnicsList[3].pyrotechnicsNumber.replace(/\D/g,'')"></el-input>
@@ -342,15 +344,15 @@
                     </div>
                 </div>
             </el-form>
-            <el-dialog :title="diaglog.title" :visible.sync="diaglog.show"   :before-close="disClose" >
+            <el-dialog :title="diaglog.title" :visible.sync="diaglog.show"   :before-close="disClose"  :close-on-click-modal = "false" :close-on-press-escape = 'false'>
                 <el-form ref="stafflist" :model="form"  label-width="100px" class="diaglog" status-icon :rules="rules" v-if="diaglog.type==0">
                     <div class="clearbox"  v-for="(ele, index) in form.projectSecurityAndSupervisor[0].projectStaffList">
                             <div class="input">
                                 <el-form-item :label="'人员姓名'"  :prop="'projectSecurityAndSupervisor[0].projectStaffList.' + index + '.staffName'" :rules="{ required: true, message: '人员姓名不能为空', trigger: 'blur'}" class="li">
-                                    <el-input v-model="ele.staffName"></el-input>
+                                    <el-input v-model="ele.staffName" @keyup.native="ele.staffName=ele.staffName.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                                 </el-form-item>
                                 <el-form-item :label="'作业证号'" :key="ele.key"  :prop="'projectSecurityAndSupervisor[0].projectStaffList.' + index + '.licenceNumber'" :rules="{ required: true, message: '人员作业号不能为空', trigger: 'blur'}" class="li">
-                                    <el-input v-model="ele.licenceNumber"></el-input>
+                                    <el-input v-model="ele.licenceNumber"  @keyup.native="ele.licenceNumber=ele.licenceNumber.replace(/\D/g ,'')"></el-input>
                                 </el-form-item>
                                 <!-- <el-form-item :label="'作业级别'" :key="ele.key"  :prop="'projectSecurityAndSupervisor[0].projectStaffList.' + index + '.staffLevel'" :rules="{ required: true, message: '人员作业号不能为空', trigger: 'blur'}" class="li">
                                     <el-select v-model="ele.staffLevel" placeholder="项目级别">
@@ -360,8 +362,8 @@
                                         <el-option label="高级/A" :value="3">高级/A</el-option>
                                     </el-select>
                                 </el-form-item> -->
-                                <el-form-item  :label="'身份证号码'"  :prop="'projectSecurityAndSupervisor[0].projectStaffList.' + index + '.staffId'" :rules="{ required: true, message: '身份证号不能为空', trigger: 'blur'}" class="li">
-                                    <el-input v-model="ele.staffId"></el-input>
+                                <el-form-item  :label="'身份证号码'"  :prop="'projectSecurityAndSupervisor[0].projectStaffList.' + index + '.staffId'" :rules="{ required: true,validator:idcard, trigger: 'blur'}" class="li">
+                                    <el-input v-model="ele.staffId" @keyup.native="ele.staffId=ele.staffId.replace(/[^0-9A-Za-z]/g ,'')"></el-input>
                             </el-form-item>
                         </div>
                         <a href="javascript:void(0)" class="smbtn add" @click="Supervisoraddmore(0)" v-if="form.projectSecurityAndSupervisor[0].projectStaffList.length==index+1"><i class="el-icon-circle-plus-outline"></i></a>
@@ -369,20 +371,20 @@
                     </div>
                     <div class="botbtn">
                         <el-button @click="disClose">取消</el-button>
-                        <el-button type="primary" @click="add(0)">确定添加</el-button>
+                        <el-button type="primary" @click="add(0)">确定</el-button>
                     </div>
                 </el-form>
                 <el-form ref="cautionDtoList" :model="form"  label-width="100px" class="diaglog" status-icon :rules="rules" v-if="diaglog.type==1">
                     <div class="clearbox"  v-for="(ele, index) in form.cautionDtoList">
                         <div class="input">
                             <el-form-item :label="'方位'"  :prop="'cautionDtoList.'+index + '.position'" :rules="{ required: true, message: '方位不能为空', trigger: 'blur'}" class="li wid">
-                                <el-input v-model="ele.position"></el-input>
+                                <el-input v-model="ele.position" @keyup.native="ele.position=ele.position.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                             <el-form-item :label="'被保护对象'" :key="ele.key"  :prop="'cautionDtoList.' + index + '.cautionObject'" :rules="{ required: true, message: '被保护对象不能为空', trigger: 'blur'}" class="li wid">
-                                <el-input v-model="ele.cautionObject"></el-input>
+                                <el-input v-model="ele.cautionObject"  @keyup.native="ele.cautionObject=ele.cautionObject.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                             <el-form-item  :label="'安全距离'"  :prop="'cautionDtoList.' + index + '.safeDistance'" :rules="{ required: true, message: '安全距离不能为空', trigger: 'blur'}" class="li wid">
-                                <el-input v-model="ele.safeDistance"></el-input>
+                                <el-input v-model="ele.safeDistance" @keyup.native="ele.safeDistance=ele.safeDistance.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                         </div>
                         <a href="javascript:void(0)" class="smbtn add" @click="Supervisoraddmore(1)" v-if="form.cautionDtoList.length==index+1"><i class="el-icon-circle-plus-outline"></i></a>
@@ -395,11 +397,11 @@
                 </el-form>
                 <div class="transfer" v-if="diaglog.type==2">
                     <div class="person">
-                        <el-transfer v-model="diaglog.data" :data="ALLstaff" :titles="['公司储蓄人员', '即将派遣人员']" v-if="diaglog.type==2" @change="dischange"></el-transfer>
-                    </div>
+                        <el-transfer v-model="diaglog.data" :data="ALLstaff" :titles="['公司储备人员', '即将派遣人员']" v-if="diaglog.type==2" @change="dischange"></el-transfer>
+                    </div>  
                     <div class="botbtn">
                         <el-button @click="disClose">取消</el-button>
-                        <el-button type="primary" @click="add(2)" >确定添加</el-button>
+                        <el-button type="primary" @click="add(2)" >确定</el-button>
                     </div>
                 </div>
                 <div class="map" id="map" v-if="diaglog.type==3">
@@ -407,6 +409,9 @@
                     <el-amap ref="map" vid="amapDemo"  :center="center" :zoom="zoom"  :events="events" class="amap">
                         <el-amap-marker vid="component-marker" :position="componentMarker.position" ></el-amap-marker>
                     </el-amap>
+                      <div class="mapsub">
+                        <el-button type="primary" @click="diaglog.show=false">确认地址</el-button>
+                    </div>
                 </div>
             </el-dialog>
             <div class="subbtn">
@@ -422,6 +427,12 @@
     export default {
         data (){
             return{
+                idcard:Validator.identityId,
+                pickerOptions0: {
+                    disabledDate(time) {
+                        return time.getTime() < Date.now() - 8.64e7;
+                    }
+                },  
                 show:0,     //切换
                 user:this.publics.global().auth,
                 isedit:false,
@@ -474,7 +485,7 @@
                             pyrotechnicsName:"炸药",   //火工品名称 ,
                             pyrotechnicsNumber:"", //火工品数量 ,
                             pyrotechnicsType:1,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
-                            pyrotechnicsUnit:"Kg", // 火工品单位
+                            pyrotechnicsUnit:"千克", // 火工品单位
                         },
                         {
                        //     detonatorDto:"" ,       //雷管编号 可以为空 ,
@@ -504,7 +515,7 @@
                     projectSecurityAndSupervisor: [       //1,项目安全评估信息 2,项目监理单位信
                         {
                          companyName: "",
-                         licenceExpireTime: 0,
+                         licenceExpireTime: "",
                          licenceNumber: "",
                          type: 1,
                          workingRange: "",        //作业范围
@@ -523,7 +534,7 @@
                         {
                          companyId: "",
                          companyName: "",
-                         licenceExpireTime: 0,
+                         licenceExpireTime:null,
                          licenceNumber: null,
                          type: 2,
                          workingRange: null,        //作业范围
@@ -631,8 +642,10 @@
             File:file
         },
         methods:{
+          
             mapshow(){
                 if(this.show==1) return false;
+                this.diaglog.title="作业地点"
                 this.diaglog.show=true;
                 this.diaglog.type=3;
             },
@@ -856,19 +869,29 @@
             },
             Supervisordel(index,type){           //删除人员功能
                 if(type==0){
-                    this.$alert('确定删除该人员？', '删除人员', {
+                     this.$confirm('确定删除该人员？', '删除人员', {
                         confirmButtonText: '确定',
-                        callback: action => {
-                            this.form.projectSecurityAndSupervisor[0].projectStaffList.splice(index,1)
-                        }
-                    });
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                         this.form.projectSecurityAndSupervisor[0].projectStaffList.splice(index,1)
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    })
                 }else{
-                    this.$alert('确定删除该警戒？', '删除人员', {
-                    confirmButtonText: '确定',
-                        callback: action => {
-                            this.form.cautionDtoList.splice(index,1)
-                        }
-                    });
+                     this.$confirm('确定删除该警戒？', '删除警戒', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                          this.form.cautionDtoList.splice(index,1)
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    })
                 }
             },
             Supervisoraddmore(type){            //新增评估单位人员 和 警戒距离  0 评估 单位  1 警戒
@@ -1176,7 +1199,20 @@
                 }
             },
             submitForm(formName){
-             
+               if(!this.form.companyIdList[0].companyId){
+                   this.$message({
+                       type:"error",
+                       message:"请确认运输公司！"
+                   })
+                   return false;
+               }
+               if(!this.form.companyIdList[1].companyId){
+                   this.$message({
+                       type:"error",
+                       message:"请确认仓储公司！"
+                   })
+                   return false;
+               }
                this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let form=JSON.parse(JSON.stringify(this.form)),listStaff=JSON.parse(JSON.stringify(this.listStaff));
@@ -1237,7 +1273,13 @@
                             })
                         })
                     } else {
-                        console.log('error submit!!');
+                        if(!this.form.worktime){
+                            this.$message({
+                                type:"error",
+                                message:"请选择作业时间！"
+                            })
+                            return false;
+                        }
                         return false;
                     }
                 });
@@ -1254,7 +1296,7 @@
              left:20px;
          }
         .map{
-            height:100%;
+            height:450px;
             position: relative;
         }
         .tp{
@@ -1437,6 +1479,10 @@
         .is-disabled input,.is-disabled .el-cascader__label{
             background: none!important;
             color:#333!important;
+        }
+        .mapsub{
+             margin:40px 0;
+            text-align: center;
         }
     }
 </style>

@@ -101,7 +101,7 @@ export default {
       if (!this.form.username) {
         this.$message({
           type: "error",
-          message: "请输入帐号"
+          message: "请输入账号"
         });
         return false; 
       }

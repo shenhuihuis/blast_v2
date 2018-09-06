@@ -2,19 +2,25 @@
     <div class="repassword">
            <el-form ref="form" label-width="124px" class="form">
                 <el-form-item label="手机号码">
-                    <el-input v-model="form.phone"  @keyup.native="form.phone=form.phone.replace(/\D/g,'')"></el-input>
+                    <el-input v-model="form.phone"  @keyup.native="form.phone=form.phone.replace(/\D/g,'')" @blur="tel"></el-input>
                 </el-form-item>
                 <el-form-item label="验证码" class="yzm">
                     <el-input v-model="form.code"></el-input>
                     <a class="getyzm" id="yzm" @click="getyzm" href="javascript:void(0);">获取验证码</a>
                 </el-form-item>
                 <el-form-item label="新密码">
-                    <el-input v-model="form.password"></el-input>
+                    <el-input v-model="form.password" type="password"></el-input>
+                </el-form-item>
+                 <el-form-item label="确认密码">
+                    <el-input v-model="form.repassword"  type="password"></el-input>
                 </el-form-item>
                 <div class="btn">
                     <el-form-item>
-                        <el-button>返回</el-button>
+                      
                         <el-button type="primary" @click="sub">确认修改</el-button>
+                        <el-button>
+                           <router-link :to="{name:'login'}">返回</router-link> 
+                        </el-button>
                     </el-form-item>
                 </div> 
            </el-form>
@@ -31,12 +37,30 @@
                 form:{
                     phone:13454752770,
                     code:"",
-                    password:""
+                    password:"",
+                    repassword:""
                 },
 
             }
         },
         methods:{
+            tel(){
+                 if (!this.form.phone) {
+                    this.$message({
+                        type:"error",
+                        message:"请输入手机号"
+                    })
+                    return false;
+                } else {
+                    if (!/^1[3|4|5|7|8]\d{9}$/.test(this.form.phone)) {
+                         this.$message({
+                            type:"error",
+                            message:"手机格式错误"
+                        })
+                        return false;
+                    }
+                }
+            },
             timer() {
                 var countdown = this.count;
                 document.getElementById('yzm').innerHTML = countdown + "秒后重发";
@@ -98,6 +122,20 @@
                       this.$message({
                         type:"error",
                         message:"请输入密码"
+                      })
+                      return false;
+                  }
+                  if (!this.form.repassword) {
+                      this.$message({
+                        type:"error",
+                        message:"请输入确认密码"
+                      })
+                      return false;
+                  }
+                  if(this.form.password!=this.form.repassword){
+                      this.$message({
+                        type:"error",
+                        message:"两次密码输入不同"
                       })
                       return false;
                   }

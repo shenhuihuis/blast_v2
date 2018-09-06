@@ -150,7 +150,6 @@
                         name:this.SearchDTO.multiCondition
                     },
                     success:(e)=>{
-                       console.log(e)
                        for(let val of e.list){
                            val.timer=this.publics.Filters.timer(val.beginTime)+" 至 "+this.publics.Filters.timer(val.endTime)
                            val.examineTime=this.publics.Filters.timer(val.examineTime)
@@ -160,7 +159,10 @@
                     }
                 })
             },
-          
+            pageChange(i){//分页
+                this.page = i
+                this.init();
+            },
         }
         
     }

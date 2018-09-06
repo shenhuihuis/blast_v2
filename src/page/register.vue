@@ -25,7 +25,7 @@
         </div>
         <el-form ref="form" :model="form" :rules="rules" label-width="124px" class="forms">
             <el-form-item label="单位名称" prop="name" :rules="[{ required: true, message: '单位名称不能为空'}]" >
-              <el-input v-model="form.name" @keyup.native="form.name=form.name.replace(/[^\u4E00-\u9FA5]/g,'')" ></el-input>
+              <el-input v-model="form.name" @keyup.native="form.name=form.name.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')" ></el-input>
             </el-form-item>
             
             <el-form-item label="所在辖区" prop="policeId" :rules="[{ required: true, message: '所在辖区不能为空'}]">
@@ -36,8 +36,8 @@
               </el-cascader>
             </el-form-item>
 
-            <el-form-item label="单位地址"  prop="companyAddress" :rules="[{ required: true, message: '单位地址不能为空'}]">
-              <el-input v-model="form.companyAddress" @keyup.native="form.companyAddress=form.companyAddress.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
+            <el-form-item label="单位地址"  prop="companyAddress" :rules="[{ required: true, message: '单位地址不能为空'}]"  >
+              <el-input v-model="form.companyAddress" @focus="mapshow"></el-input>
             </el-form-item>
             <div v-if="form.companyType==0 || form.companyType==1" >
               <el-form-item label="作业许可证级别" prop="level" :rules="[{ required: true, message: '作业许可证级别不能为空'}]" v-if="form.companyType==0 || form.companyType==1">  <!--type==0 || 1-->
@@ -54,11 +54,11 @@
               </el-form-item>
             </div>
             <el-form-item label="法人代表" prop="corporation" :rules="[{ required: true, message: '法人代表不能为空'}]">
-              <el-input v-model="form.corporation" @keyup.native="form.corporation=form.corporation.replace(/[^\u4e00-\u9fa5]/g,'')"></el-input>
+              <el-input v-model="form.corporation" @keyup.native="form.corporation=form.corporation.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
             </el-form-item>
 
             <el-form-item label="联系人姓名"  prop="contacts" :rules="[{ required: true, message: '联系人姓名不能为空'}]">
-              <el-input v-model="form.contacts" @keyup.native="form.contacts=form.contacts.replace(/[^\u4e00-\u9fa5]/g,'')" ></el-input>
+              <el-input v-model="form.contacts" @keyup.native="form.contacts=form.contacts.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')" ></el-input>
             </el-form-item>
 
             <el-form-item label="手机号码(账号)" prop="phone">
@@ -75,6 +75,17 @@
                 </el-form-item>
             </div> 
         </el-form>
+        <el-dialog :title="diaglog.title" :visible.sync="diaglog.show"   :before-close="disClose" >
+            <div class="map" id="map">
+                <el-amap-search-box class="search-box"  :on-search-result="onSearchResult"></el-amap-search-box>
+                <el-amap ref="map" vid="amapDemo"  :center="center" :zoom="zoom"  :events="events" class="amap">
+                    <el-amap-marker vid="component-marker" :position="componentMarker.position" ></el-amap-marker>
+                </el-amap>
+                <div class="mapsub">
+                     <el-button type="primary" @click="disClose">确认地址</el-button>
+                </div>
+            </div>
+        </el-dialog>
     </div>
     <div class="lastStep" v-show="show==2">
          <img src="../assets/img/top@2x.png" alt="">
@@ -135,6 +146,10 @@
      data(){
        return{
           show:0,
+          diaglog:{
+            show:false,
+            title:"地址选择"
+          },
           companyType:[
             { tit :'爆破公司注册',checked:false,type:0,toname:'爆破作业单位许可证',pid:"4a23"},
             { tit :'监理公司注册',checked:false,type:1,toname:'爆破作业单位许可证',pid:"ebf5"},
@@ -162,6 +177,29 @@
             contacts:'',  //联系人姓名
             phone:'',  //手机号码（账号）
             email:'',
+            latitude:"",
+            longitude:""
+          },
+          zoom: 12,
+          center: [121.41975305378435, 30.159790305598523],
+          componentMarker:{
+              position:[121.41975305378435, 30.159790305598523],
+          },
+           events: {
+                    init: (o) => {
+                        o.getCity(result => {
+                            console.log(result)
+                        })
+                    },
+                    'moveend': () => {
+                    },
+                    'zoomchange': () => {
+                    },
+                    'click': (e) => {
+                        let position=[e.lnglat.O,e.lnglat.P]
+                        this.componentMarker.position=position;
+                        this.getplace(e.lnglat.O,e.lnglat.P)
+                    }
           },
           upload:[
              {type:0,dataurl:'',url:'',title:'营业执照'},
@@ -215,6 +253,49 @@
    
      },
      methods:{
+            disClose(){
+                this.diaglog.show=false;
+            },
+            mapshow(){
+              this.diaglog.show=true;
+            },
+            onSearchResult(pois){
+                let latSum = 0;
+                let lngSum = 0;
+                if (pois.length > 0) {
+                    pois.forEach(poi => {
+                        let {lng, lat} = poi;
+                        lngSum += lng;
+                        latSum += lat;
+                      //  this.markers.push([poi.lng, poi.lat]);
+                    });
+                    let center = {
+                        lng: lngSum / pois.length,
+                        lat: latSum / pois.length
+                    };
+                    this.center = [center.lng, center.lat];
+                    this.componentMarker.position=[center.lng, center.lat];
+                    this.getplace(center.lng, center.lat)
+                }
+            },
+            getplace(lng,lat){
+                 $http.get("http://restapi.amap.com/v3/geocode/regeo?key=b8575409aa59a558b2674aaac213d18c&location="+lng+","+lat+"&poitype&radius=1000&extensions=all&batch=false%20&roadlevel=0")
+                    .set('Content-Type', 'application/json') 
+                    .end((err, res)=>{
+                        let data=res.body;
+                        if(data.infocode=="10000"){
+                               this.form.companyAddress=res.body.regeocode.formatted_address;
+                               this.form.latitude=lng;
+                               this.form.longitude=lat;
+                        }else{
+                            this.$message({
+                                type:"error",
+                                message:"无法查询到该地址。"
+                            })
+                        }
+                     
+                })
+        },
       radiock(index,val){
           if(index==0){
             this.$refs['form1'].clearValidate(['txmExpireTime'])
@@ -243,8 +324,13 @@
         if(Arr[index].toname!=this.toname){
           sessionStorage.removeItem("form")
           this.selectedOptions=[];
+          for(let val of this.upload){
+            val.url="";
+            val.dataurl=""
+          }
           this.$refs['form'].resetFields()
           this.$refs['form1'].resetFields()
+          
         };
        // this.form.pid=Arr[index].pid;
         this.typename=Arr[index].toname;
@@ -268,7 +354,7 @@
             sessionStorage.setItem("show","2")
             sessionStorage.setItem("form",this.publics.DES.encode(JSON.stringify(this.form)));
             this.show=2;
-            
+            this.$refs['form1'].clearValidate()
           } else {
             console.log('error submit!!');
             return false;
@@ -313,6 +399,19 @@
   .register{
     width:1440px;
     margin:0 auto;
+    .mapsub{
+      margin:40px 0;
+      text-align: center;
+    }
+     .map{
+            height:450px;
+            position: relative;
+    }
+     .search-box{
+             position: absolute;
+             top:20px;
+             left:20px;
+      }
     .upbox{
       width:158px;
       height:100px;

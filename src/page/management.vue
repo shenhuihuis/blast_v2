@@ -1,7 +1,7 @@
 <template>
     <div class = 'management'>
         <div class = 'topBar'>
-            <el-select v-model="staffSearchDTO.type" placeholder="选择人员类型" @change='init'>
+            <el-select v-model="staffSearchDTO.type" placeholder="选择人员类型" @change='cgstatus'>
                 <el-option
                 v-for="item in personType"
                 :key="item.value"
@@ -10,7 +10,7 @@
                 :value="item.value">
                 </el-option>
             </el-select>
-            <el-select v-model="staffSearchDTO.status" placeholder="选择状态" @change='init'>
+            <el-select v-model="staffSearchDTO.status" placeholder="选择状态" @change='cgstatus'>
                 <el-option
                 v-for="item in status"
                 :key="item.value"
@@ -117,7 +117,12 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="性别" prop="gender" :rules="[{ required: true, message: '性别不能为空'}]">
-                            <el-radio-group v-model="newForm.gender">
+                            <div v-if="isDetail"> 
+                                <span v-if="newForm.gender==0">男性</span>   
+                                <span v-if="newForm.gender==1">女性</span>   
+                                <span v-if="newForm.gender==2">保密</span>   
+                            </div>
+                            <el-radio-group v-model="newForm.gender" v-else>
                                 <el-radio label="0" >男性</el-radio>
                                 <el-radio label="1" >女性</el-radio>
                                 <el-radio label="2" >保密</el-radio>
@@ -272,7 +277,7 @@
                     {value:0,text:'在职'},
                     {value:1,text:'离职'},
                     {value:2,text:'已锁定'},
-                    {value:3,text:'账号冻结'}
+                    // {value:3,text:'账号冻结'}
                 ],
                 flag:true,//按钮开关
                 dataList:[],
@@ -327,6 +332,10 @@
           
         },
         methods:{
+            cgstatus(){
+                this.page=1;
+                this.init()
+            },
             initNewForm(){//表单初始
                 if(this.$refs['newForm']!==undefined){
                     this.$refs['newForm'].clearValidate();
@@ -864,6 +873,13 @@
     }
     .warning-row1 td:nth-child(6) .cell{
         color: #FF4B4B;
+    }
+    .el-input.is-disabled .el-input__inner{
+        color:#333;
+        background: none;
+    }
+    .el-radio__input.is-disabled+span.el-radio__label{
+        color:#333;
     }
 }
 </style>
