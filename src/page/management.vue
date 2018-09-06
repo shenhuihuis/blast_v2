@@ -134,7 +134,7 @@
                 <el-row>
                     <el-col :span="24">
                         <el-form-item label="现居地住址" label-width="80" prop = 'currAddress' :rules="[{ required: true, message: '现居地住址不能为空'}]">
-                            <el-input v-model="newForm.currAddress" @keyup.native="newForm.currAddress=newForm.currAddress.replace(/[^\u4e00-\u9fa5]/g,'')"></el-input>
+                            <el-input v-model="newForm.currAddress" @keyup.native="newForm.currAddress=newForm.currAddress.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -575,6 +575,7 @@
 
                                 }
                         }).catch(() => {
+                            this.flag=true;
                             // this.initNewForm()
                     });
                     

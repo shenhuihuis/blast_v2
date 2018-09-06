@@ -55,133 +55,312 @@
             </div>
         </div>
         <el-dialog :title="diaglog.title" :visible.sync="diaglog.show"  :before-close="disClose" id="node">
-            <table  border="1" class="table" width="100%" >
-                <tr>
-                    <td width='100'>项目：</td>
-                    <td width="200"> 
-                        <el-autocomplete  popper-class="my-autocomplete"  v-model="diaglog.state" :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect">
-                            <template slot-scope="{ item }"><div class="name">{{ item.value }}</div></template>
-                        </el-autocomplete>
-                    </td>
-                    <td width="100">项目级别：</td>
-                    <td width="150">{{publics.Filters.convert(company.projectLevel || 0).projectLevel()}} ,第   {{company.order || 0}}   次购买</td>
-                    <td width="100">仓库：</td>
-                    <td width="150">{{company.warehouseName}}</td>
-                </tr>
-            </table>
-            <table  border="1" class="table" width="100%"  v-if="blastlist">
-                <thead>
-                    <td colspan="9">项目物品信息</td>
-                </thead>
-                <tbody>
-                    <tr v-for="(i,index) in blastlist">
-                        <td width='100'>
-                          <span v-if="i.type==1">审批总量</span>  
-                          <span v-if="i.type==2">可购买量</span>  
-                          <span v-if="i.type==3">项目库余量</span>  
+            <div v-if="show==2">
+                <table  border="1" class="table" width="100%" >
+                    <tr>
+                        <td width='100'>项目：</td>
+                        <td width="200"> 
+                            <span v-if="company.projectName">{{company.projectName}}</span>
+                            <el-autocomplete  popper-class="my-autocomplete"  v-model="diaglog.state" :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect" v-else>
+                                <template slot-scope="{ item }"><div class="name">{{ item.value }}</div></template>
+                            </el-autocomplete>
                         </td>
-                        <td width='100'>炸药</td>
-                        <td width='150'>{{i.zaYao}}</td>
-                        <td>雷管</td>
-                        <td width='100'>{{i.leiGuan}}</td>
-                        <td>导爆管</td>
-                        <td width='100'>{{i.daoBaoGuan}}</td>
-                        <td>导爆索</td>
-                        <td width='100'>{{i.daoBaoSuo}}</td>
+                        <td width="100">项目级别：</td>
+                        <td width="150">{{publics.Filters.convert(company.projectLevel || 0).projectLevel()}} ,第   {{company.order || 0}}   次购买</td>
+                        <td width="100">仓库：</td>
+                        <td width="150">{{company.warehouseName}}</td>
                     </tr>
-                </tbody>
-            </table>
-            <el-form ref="form" :model="form"  label-width="0" class="project-form" status-icon :rules="rules" :disabled='show==1'>
-                <table  border="1" class="table" width="100%"  v-if="company.projectId">
+                </table>
+                <table  border="1" class="table" width="100%"  v-if="blastlist">
                     <thead>
-                        <td colspan="6">购买物品信息</td>
+                        <td colspan="9">项目物品信息</td>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td :rowspan="form.blastlist.zy.length+1" colspan="2" width="120">炸药</td>
-                            <td width="180">品名</td>
-                            <td width="180">型号</td>
-                            <td width="180">数量（kg）</td>
-                            <td width="180">操作</td>
-                        </tr>
-                        <tr v-for="(i,index) in form.blastlist.zy">
-                            <td>
-                                <el-select v-model="i.pyrotechnicsName">
-                                    <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.zytype" :key="j"></el-option>
-                                </el-select>
+                        <tr v-for="(i,index) in blastlist">
+                            <td width='100'>
+                            <span v-if="i.type==1">审批总量</span>  
+                            <span v-if="i.type==2">可购买量</span>  
+                            <span v-if="i.type==3">项目库余量</span>  
                             </td>
-                            <td>
-                                <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsModel'" :rules="[{required: true}]"  class="li" >
-                                    <el-input v-model="i.pyrotechnicsModel" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,0)"></el-input>
-                                </el-form-item>
-                            </td>
-                            <td>
-                                <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
-                                    <el-input v-model="i.pyrotechnicsNumber"></el-input>
-                                </el-form-item>
-                            </td>
-                            <td>
-                                <i class="el-icon-plus"  title="新增" @click="addblast(0,index)" v-if="form.blastlist.zy.length==index+1"></i>
-                                <i class="el-icon-minus" title="删除" @click="badelete(0,index)" v-if="index>0"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td :rowspan="form.blastlist.lg.length+1" colspan="2" width="100">雷管</td>
-                            <td>类型</td>
-                            <td>段别</td>
-                            <td>数量（发)</td>
-                            <td>操作</td>
-                        </tr>
-                        <tr  v-for="(i,index) in form.blastlist.lg" >
-                            <td>
-                                <el-select v-model="i.pyrotechnicsName" placeholder="">
-                                    <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.lgtype" :key="j"></el-option>
-                                </el-select>
-                            </td>
-                            <td>
-                                <div  class="lgsml">
-                                    <el-input v-model="i.pyrotechnicsModel.d">
-                                        <template slot="append">段</template>
-                                    </el-input>
-                                    <el-input v-model="i.pyrotechnicsModel.m" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,1)">
-                                        <template slot="append">米</template>
-                                    </el-input>
-                                </div>
-                            </td>
-                            <td>
-                                <el-form-item  :prop="'blastlist.lg.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
-                                    <el-input v-model="i.pyrotechnicsNumber"></el-input>
-                                </el-form-item>
-                            </td>
-                            <td>
-                                <i class="el-icon-plus"  title="新增" @click="addblast(1,index)" v-if="form.blastlist.lg.length==index+1"></i>
-                                <i class="el-icon-minus" title="删除" @click="badelete(1,index)" v-if="index>0"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="100" colspan="2">工业索类</td>
-                            <td width="140">导爆索</td>
-                            <td width="100">
-                                <el-form-item  label-width="0" >
-                                      <el-input v-model="form.blastlist.dbg.pyrotechnicsNumber">
-                                            <template slot="append">米</template>
-                                      </el-input>
-                                </el-form-item>
-                            </td>
-                            <td width="50">导爆索</td>
-                            <td width="100">
-                                 <el-form-item  label-width="0" >
-                                      <el-input v-model="form.blastlist.dbs.pyrotechnicsNumber">
-                                            <template slot="append">米</template>
-                                      </el-input>
-                                </el-form-item>
-                            </td>
+                            <td width='100'>炸药</td>
+                            <td width='150'>{{i.zaYao}}</td>
+                            <td>雷管</td>
+                            <td width='100'>{{i.leiGuan}}</td>
+                            <td>导爆管</td>
+                            <td width='100'>{{i.daoBaoGuan}}</td>
+                            <td>导爆索</td>
+                            <td width='100'>{{i.daoBaoSuo}}</td>
                         </tr>
                     </tbody>
                 </table>
-            </el-form>
-            <div class="subbtn" v-if="blastlist && !test.show">
-                <el-button type="primary" @click="sub('form')">提交申请</el-button>
+                <el-form ref="form" :model="form"  label-width="0" class="project-form" status-icon :rules="rules" :disabled='show==1'>
+                    <table  border="1" class="table" width="100%"  v-if="company.projectId">
+                        <thead>
+                            <td colspan="6">购买物品信息</td>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td :rowspan="form.blastlist.zy.length+1" colspan="2" width="120">炸药</td>
+                                <td width="180">品名</td>
+                                <td width="180">型号</td>
+                                <td width="180">数量（kg）</td>
+                                <td width="180">操作</td>
+                            </tr>
+                            <tr v-for="(i,index) in form.blastlist.zy">
+                                <td>
+                                    <el-select v-model="i.pyrotechnicsName">
+                                        <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.zytype" :key="j"></el-option>
+                                    </el-select>
+                                </td>
+                                <td>
+                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsModel'" :rules="[{required: true}]"  class="li" >
+                                        <el-input v-model="i.pyrotechnicsModel" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,0)"></el-input>
+                                    </el-form-item>
+                                </td>
+                                <td>
+                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
+                                        <el-input v-model="i.pyrotechnicsNumber"></el-input>
+                                    </el-form-item>
+                                </td>
+                                <td>
+                                    <i class="el-icon-plus"  title="新增" @click="addblast(0,index)" v-if="form.blastlist.zy.length==index+1"></i>
+                                    <i class="el-icon-minus" title="删除" @click="badelete(0,index)" v-if="index>0"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td :rowspan="form.blastlist.lg.length+1" colspan="2" width="100">雷管</td>
+                                <td>类型</td>
+                                <td>段别</td>
+                                <td>数量（发)</td>
+                                <td>操作</td>
+                            </tr>
+                            <tr  v-for="(i,index) in form.blastlist.lg" >
+                                <td>
+                                    <el-select v-model="i.pyrotechnicsName" placeholder="">
+                                        <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.lgtype" :key="j"></el-option>
+                                    </el-select>
+                                </td>
+                                <td>
+                                    <div  class="lgsml">
+                                        <el-input v-model="i.pyrotechnicsModel.d">
+                                            <template slot="append">段</template>
+                                        </el-input>
+                                        <el-input v-model="i.pyrotechnicsModel.m" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,1)">
+                                            <template slot="append">米</template>
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <el-form-item  :prop="'blastlist.lg.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
+                                        <el-input v-model="i.pyrotechnicsNumber"></el-input>
+                                    </el-form-item>
+                                </td>
+                                <td>
+                                    <i class="el-icon-plus"  title="新增" @click="addblast(1,index)" v-if="form.blastlist.lg.length==index+1"></i>
+                                    <i class="el-icon-minus" title="删除" @click="badelete(1,index)" v-if="index>0"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100" colspan="2">工业索类</td>
+                                <td width="140">导爆索</td>
+                                <td width="100">
+                                    <el-form-item  label-width="0" >
+                                        <el-input v-model="form.blastlist.dbg.pyrotechnicsNumber">
+                                                <template slot="append">米</template>
+                                        </el-input>
+                                    </el-form-item>
+                                </td>
+                                <td width="50">导爆管</td>
+                                <td width="100">
+                                    <el-form-item  label-width="0" >
+                                        <el-input v-model="form.blastlist.dbs.pyrotechnicsNumber">
+                                                <template slot="append">米</template>
+                                        </el-input>
+                                    </el-form-item>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <!-- <tbody v-else>
+                            <tr>
+                                <td :rowspan="form.blastlist.zy.length+1" colspan="2" width="120">炸药</td>
+                                <td width="180">品名</td>
+                                <td width="180">型号</td>
+                                <td width="180">数量（kg）</td>
+                                <td width="180">操作</td>
+                            </tr>
+                            <tr v-for="(i,index) in form.blastlist.zy">
+                                <td>
+                                    <el-select v-model="i.pyrotechnicsName">
+                                        <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.zytype" :key="j"></el-option>
+                                    </el-select>
+                                </td>
+                                <td>
+                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsModel'" :rules="[{required: true}]"  class="li" >
+                                        <el-input v-model="i.pyrotechnicsModel" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,0)"></el-input>
+                                    </el-form-item>
+                                </td>
+                                <td>
+                                    <el-form-item  :prop="'blastlist.zy.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
+                                        <el-input v-model="i.pyrotechnicsNumber"></el-input>
+                                    </el-form-item>
+                                </td>
+                                <td>
+                                    <i class="el-icon-plus"  title="新增" @click="addblast(0,index)" v-if="form.blastlist.zy.length==index+1"></i>
+                                    <i class="el-icon-minus" title="删除" @click="badelete(0,index)" v-if="index>0"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td :rowspan="form.blastlist.lg.length+1" colspan="2" width="100">雷管</td>
+                                <td>类型</td>
+                                <td>段别</td>
+                                <td>数量（发)</td>
+                                <td>操作</td>
+                            </tr>
+                            <tr  v-for="(i,index) in form.blastlist.lg" >
+                                <td>
+                                    <el-select v-model="i.pyrotechnicsName" placeholder="">
+                                        <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.lgtype" :key="j"></el-option>
+                                    </el-select>
+                                </td>
+                                <td>
+                                    <div  class="lgsml">
+                                        <el-input v-model="i.pyrotechnicsModel.d">
+                                            <template slot="append">段</template>
+                                        </el-input>
+                                        <el-input v-model="i.pyrotechnicsModel.m" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,1)">
+                                            <template slot="append">米</template>
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <el-form-item  :prop="'blastlist.lg.' + index + '.pyrotechnicsNumber'" :rules="[{required: true}]"  class="li">
+                                        <el-input v-model="i.pyrotechnicsNumber"></el-input>
+                                    </el-form-item>
+                                </td>
+                                <td>
+                                    <i class="el-icon-plus"  title="新增" @click="addblast(1,index)" v-if="form.blastlist.lg.length==index+1"></i>
+                                    <i class="el-icon-minus" title="删除" @click="badelete(1,index)" v-if="index>0"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100" colspan="2">工业索类</td>
+                                <td width="140">导爆索</td>
+                                <td width="100">
+                                    <el-form-item  label-width="0" >
+                                        <el-input v-model="form.blastlist.dbg.pyrotechnicsNumber">
+                                                <template slot="append">米</template>
+                                        </el-input>
+                                    </el-form-item>
+                                </td>
+                                <td width="50">导爆索</td>
+                                <td width="100">
+                                    <el-form-item  label-width="0" >
+                                        <el-input v-model="form.blastlist.dbs.pyrotechnicsNumber">
+                                                <template slot="append">米</template>
+                                        </el-input>
+                                    </el-form-item>
+                                </td>
+                            </tr>
+                        </tbody> -->
+                    </table>
+                </el-form>
+                <div class="subbtn" v-if="blastlist && !test.show">
+                    <el-button type="primary" @click="sub('form')">提交申请</el-button>
+                </div>
+            </div>
+            <div v-else>        <!--查看-->
+                 <table  border="1" class="table" width="100%" >
+                    <tr>
+                        <td width='100'>项目：</td>
+                        <td width="200"> 
+                            <span>{{details.projectName}}</span>
+                        </td>
+                        <td width="100">项目级别：</td>
+                        <td width="150">{{publics.Filters.convert(details.projectLevel).projectLevel()}} ,第   {{details.order}}   次购买</td>
+                        <td width="100">仓库：</td>
+                        <td width="150">{{details.warehouseName}}</td>
+                    </tr>
+                </table>
+                <table  border="1" class="table" width="100%">
+                    <thead>
+                        <td colspan="9">项目物品信息</td>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(i,index) in details.projectPurchaseNumberList">
+                            <td width='100'>
+                            <span v-if="i.type==1">审批总量</span>  
+                            <span v-if="i.type==2">可购买量</span>  
+                            <span v-if="i.type==3">项目库余量</span>  
+                            </td>
+                            <td width='100'>炸药</td>
+                            <td width='150'>{{i.zaYao}}</td>
+                            <td>雷管</td>
+                            <td width='100'>{{i.leiGuan}}</td>
+                            <td>导爆管</td>
+                            <td width='100'>{{i.daoBaoGuan}}</td>
+                            <td>导爆索</td>
+                            <td width='100'>{{i.daoBaoSuo}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                    <table  border="1" class="table" width="100%"  v-if="details.blastlist">
+                        <thead>
+                            <td colspan="6">购买物品信息</td>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td :rowspan="details.blastlist.zy.length+1" colspan="2" width="60">炸药</td>
+                                <td width="240">品名</td>
+                                <td width="240">型号</td>
+                                <td width="240">数量（kg）</td>
+                                <td></td>
+                            </tr>
+                            <tr v-for="(i,index) in details.blastlist.zy">
+                                <td>{{i.pyrotechnicsName}}</td>
+                                <td>{{i.pyrotechnicsModel}}</td>
+                                <td>{{i.pyrotechnicsNumber}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td :rowspan="details.blastlist.lg.length+1" colspan="2" width="60">雷管</td>
+                                <td>类型</td>
+                                <td>段别</td>
+                                <td>数量（发)</td>
+                                <td></td>
+                            </tr>
+                            <tr  v-for="(i,index) in details.blastlist.lg" >
+                                <td>{{i.pyrotechnicsName}}</td>
+                                <td>
+                                    <div  class="lgsml">
+                                        <el-input v-model="i.pyrotechnicsModel.d">
+                                            <template slot="append">段</template>
+                                        </el-input>
+                                        <el-input v-model="i.pyrotechnicsModel.m" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,1)">
+                                            <template slot="append">米</template>
+                                        </el-input>
+                                    </div>
+                                </td>
+                                <td>{{i.pyrotechnicsNumber}}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td width="100" colspan="2">工业索类</td>
+                                <td width="140">导爆索</td>
+                                <td width="100">
+                                        <el-input v-model="details.blastlist.dbg.pyrotechnicsNumber || 0">
+                                                <template slot="append">米</template>
+                                        </el-input>
+                                </td>
+                                <td width="50">导爆管</td>
+                                <td width="100">
+                                        <el-input v-model="details.blastlist.dbs.pyrotechnicsNumber || 0">
+                                                <template slot="append">米</template>
+                                        </el-input>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
             </div>
         </el-dialog> 
         <toast v-bind:img="test" @tosub="endsub"></toast>
@@ -195,7 +374,7 @@
             return {
                 dataList:null,
                 blastlist:null,          //炸弹余量
-                show:0,     //切换 
+                show:0,     //切换      0列表 1查看 2新增 
                 user:this.publics.global().auth,
                 page:1,
                 size:10,
@@ -220,6 +399,7 @@
                      data:[],   //存储数据
                      state:''
                 },
+                details:{},
                 form:{
                        blasttype:{              //炸药类型
                             lgtype:[],           //雷管类型
@@ -289,11 +469,39 @@
         },
         methods:{
             handleDetail(id){
-                
+                this.publics.AJAX.$POST({
+                    url:"purchase/detail/"+id,
+                    success:(e)=>{
+                        let details=e;
+                        details.blastlist={zy:[],lg:[],dbs:{},dbg:{}}
+                        for(let val of e.pyrotechnics){
+                            if(val.pyrotechnicsType==1){
+                                 details.blastlist.zy.push(val)
+                            }
+                            else if(val.pyrotechnicsType==2){
+                                val.pyrotechnicsModel={
+                                    d:val.pyrotechnicsModel.split("-")[0],
+                                    m:val.pyrotechnicsModel.split("-")[1]
+                                }
+                                details.blastlist.lg.push(val)
+                            }
+                            else{
+                                if(val.pyrotechnicsModel==1){
+                                    details.blastlist.dbg=val
+                                }else{
+                                    details.blastlist.dbs=val
+                                }
+                            }
+                        }
+                        this.show=1;
+                        this.diaglog.show=true;
+                        this.details=details;
+                        console.log(details)
+                    }
+                })
             },
             endsub(e){
                 if(e==0){
-                    
                         this.publics.AJAX.$POST({
                             url:"purchase/buy",
                             data:this.dto,
@@ -513,6 +721,7 @@
                 })
             },
             disClose(){
+                this.show=0;
                 this.diaglog.show=false;
             },
             formatState(res){
@@ -538,6 +747,7 @@
                 this.getblast(val.projectId)
             },
             addNewForm(){
+                this.show=2;
                 this.diaglog.show=true;
             },
             querySearch(queryString, cb) {
@@ -645,6 +855,17 @@
                         }
                     }
                 }
+                
+            }
+            .el-range-editor.is-disabled{
+                background: none!important;
+            }
+            .el-date-editor{
+                width:100%;
+            }
+            .is-disabled input,.is-disabled .el-cascader__label{
+                background: none!important;
+                color:#333!important;
             }
             .pgtable_add{
                 color:#979797;

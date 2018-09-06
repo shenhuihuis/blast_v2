@@ -37,7 +37,7 @@
             </el-form-item>
 
             <el-form-item label="单位地址"  prop="companyAddress" :rules="[{ required: true, message: '单位地址不能为空'}]">
-              <el-input v-model="form.companyAddress" @keyup.native="form.companyAddress=form.companyAddress.replace(/[^\u4e00-\u9fa5]/g,'')"></el-input>
+              <el-input v-model="form.companyAddress" @keyup.native="form.companyAddress=form.companyAddress.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
             </el-form-item>
             <div v-if="form.companyType==0 || form.companyType==1" >
               <el-form-item label="作业许可证级别" prop="level" :rules="[{ required: true, message: '作业许可证级别不能为空'}]" v-if="form.companyType==0 || form.companyType==1">  <!--type==0 || 1-->

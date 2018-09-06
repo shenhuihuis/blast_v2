@@ -1,6 +1,7 @@
 //主路由模块
 const index = resolve => require(['../page/home'], resolve)  //主页 
 const login = resolve => require(['../page/login'], resolve)  //项目监管 
+const policeIndex=resolve => require(['../page/policeIndex'], resolve)
 import blast_router from "./blast"//爆破二级路由
 import depot_router from "./depot"//仓库管理二级路由
 import police_router from "./police"//公安监管二级路由
@@ -23,7 +24,6 @@ export default [
     children:[
       ...blast_router,
       ...depot_router,
-      ...police_router,
       ...logistics_router,
       ...project_router,
       { 
@@ -42,6 +42,17 @@ export default [
         name:"notice"
       },
 
+    ]
+  },
+  {
+    path:'/policeIndex',   //派出所 治安大队
+    component: policeIndex,
+    name:"policeIndex",
+    meta: {
+      title: '派出所 治安大队主页',
+    },
+    children:[
+      ...police_router
     ]
   },
   { 

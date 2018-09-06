@@ -613,6 +613,7 @@
                 type:"get",
                 hastoken:false,
                 success:(res)=>{
+                    console.log(res)
                     this.options=res;
                     
                 }
@@ -828,6 +829,29 @@
             disClose(){                 //关闭diag
                 this.ALLstaff=[];
                 this.diaglog.data=[];
+                let type=this.diaglog.type;
+                if(type==0 && this.form.projectSecurityAndSupervisor[0].projectStaffList.length>1){
+                        for(let val of this.form.projectSecurityAndSupervisor[0].projectStaffList){
+                            if(!val.licenceNumber || !val.staffName || !val.staffId){
+                                this.$message({
+                                    type:"error",
+                                    message:"请完善人员信息!"
+                                })
+                                return false;
+                            }
+                        }
+                }
+                if(type==1 && this.form.cautionDtoList.length>1){
+                        for(let val of this.form.cautionDtoList){
+                            if(!val.cautionObject || !val.position || !val.safeDistance){
+                                this.$message({
+                                    type:"error",
+                                    message:"请完善警戒信息!"
+                                })
+                                return false;
+                            }
+                        }
+                }
                 this.diaglog.show=false;
             },
             Supervisordel(index,type){           //删除人员功能
@@ -1145,8 +1169,11 @@
                 })
             },
             dataFloat(e){           //作业时间选择
-                this.form.beginTime=e[0];
-                this.form.endTime=e[1];
+                console.log(this.form.worktime)
+                if(e){
+                    this.form.beginTime=e[0];
+                    this.form.endTime=e[1];
+                }
             },
             submitForm(formName){
              

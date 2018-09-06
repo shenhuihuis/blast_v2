@@ -68,9 +68,9 @@ export default {
   data() {
     return {
       form:{
-        username:'13454752770',
-        // username:'18758803025',
-        password:'456123'
+        //username:'13454752770',
+        username:'18758803025',
+        password:'123456'
       },
       colds:{
         show:false,
@@ -118,27 +118,23 @@ export default {
         data:this.form,
         hastoken:true,
         success:(res)=>{
-          console.log(res)
            let load = this.$loading({
             text: "正在登录中!请稍等..."
            });
-           let Menu=[],auth;
-           for(let i=1; i< res.sysMenuIds.length;i++){
-             Menu.push(res.sysMenuIds[i])
-           }
+           let Menu=res.sysMenuIds.chidren,auth;
            for(let val of this.publics.Config.companyType){
-             if(val.id==res.sysMenuIds[0]){
-                auth=val
-             }
+              if(val.id==res.sysMenuIds.id){
+                  auth=val
+              }
            }
            auth.userId=res.userId
            this.publics.Cookie.set("token",res.token);
            sessionStorage.setItem("menu",this.publics.DES.encode(JSON.stringify(Menu)));
-           sessionStorage.setItem("auth",this.publics.DES.encode(JSON.stringify(auth)))
+           sessionStorage.setItem("auth",this.publics.DES.encode(JSON.stringify(auth)));
            setTimeout(e => {
               load.close();
               this.$router.push({
-                  name: "management"
+                  name:"management"
               });
            }, 2000);
         }
