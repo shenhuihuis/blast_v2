@@ -16,7 +16,7 @@ class Config {
       Base_Port:{
         domain:"http://192.168.1.82:7000/",
        // domain:"http://192.168.1.84:7000/",
-        // domain:"http://192.168.1.78:7000/",
+        //domain:"http://192.168.1.78:7000/",
         path:"api/v2/"
       },     //api
       key: "ABWE@@#aQWow!@#$",                          //加密🔑
@@ -198,7 +198,7 @@ class AJAX extends Config{
                   new Cookie().clear()
                   window.location.href=""
               }, 500);
-              setTimeout(e=>{loading.close()},1000)
+              setTimeout(e=>{loading.close()},500)
               reject();
             }
             else{

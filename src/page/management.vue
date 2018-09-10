@@ -19,7 +19,7 @@
                 </el-option>
             </el-select>
             <div class = 'right'>
-                <div   @click="addNewForm" v-if = 'type != 2' class="addBtn" style="display:inline-block;">新增人员</div>
+                <div  @click="addNewForm" v-if = 'type != 2' class="addBtn" style="display:inline-block;">新增人员</div>
                 <el-dropdown trigger="click" v-if = 'type == 2' class = 'addBtn' style = 'display:inline-block' @command="handleCommand">
                     <span class="el-dropdown-link">
                         新增人员

@@ -225,7 +225,7 @@
                     <thead>
                         <th colspan="6">安全监理单位参与本项目的爆破作业人员名单</th>
                     </thead>
-                    <tr>
+                    <tr v-if="form.projectSecurityAndSupervisor.length>1">
                         <td width="180">单位名称</td>
                         <td width="402">
                         <el-form-item label-width="0" :rules="[{ required: true}]"  class="sml"> 
@@ -236,11 +236,26 @@
                         <td width="180" colspan="2">单位许可证编号</td>
                         <td width="402">{{form.projectSecurityAndSupervisor[1].licenceNumber}}</td>
                     </tr>
-                    <tr>
+                    <tr v-else>
+                         <td width="180">单位名称</td>
+                        <td width="402">
+                        
+                           
+                        </td>
+                        <td width="180" colspan="2">单位许可证编号</td>
+                        <td width="402"></td>
+                    </tr>
+                    <tr v-if="form.projectSecurityAndSupervisor.length>1">
                         <td>单位资质</td>
                         <td>{{form.projectSecurityAndSupervisor[1].workingRange}}</td>
                         <td colspan="2">许可证有效期</td>
                         <td><span v-if="form.projectSecurityAndSupervisor[1].licenceExpireTime">{{publics.Filters.timer(form.projectSecurityAndSupervisor[1].licenceExpireTime)}}</span></td>
+                    </tr>
+                    <tr v-else>
+                        <td>单位资质</td>
+                        <td></td>
+                        <td colspan="2">许可证有效期</td>
+                        <td></span></td>
                     </tr>
                     <tr>
                         <td width="120"></td>
@@ -642,7 +657,7 @@
             File:file
         },
         methods:{
-          
+            
             mapshow(){
                 if(this.show==1) return false;
                 this.diaglog.title="作业地点"
@@ -690,6 +705,8 @@
              this.publics.AJAX.$POST({
                  url:"project/"+id,
                  success:(e)=>{
+                    console.log(e)
+                   // return false;
                     e.worktime = [e.beginTime, e.endTime];
                     let policeIds=[],listStaff=this.listStaff;
                     for(let val of e.policeIds){

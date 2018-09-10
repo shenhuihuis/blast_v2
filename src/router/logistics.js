@@ -1,5 +1,5 @@
-const logistics_car = resolve => require(['../page/logistics/car'], resolve)  //注册
-const distribution = resolve => require(['../page/logistics/distribution'], resolve)  //注册
+const logistics_car = resolve => require(['../page/logistics/car'], resolve)  
+const distribution = resolve => require(['../page/logistics/distribution'], resolve)  
 export default [
     { 
         path:'/logistics_car', 

@@ -18,27 +18,27 @@
                 </div>
             </div>
             <div class="blastlist">
-                <el-table :data="dataList" style="width: 100%">
+                <el-table :data="dataList" style="width: 100%"  :row-class-name="tableRowClassName">
                     <el-table-column prop="projectName" label="项目名称"  width="240px"></el-table-column>
                     <el-table-column prop="buyMsg" label="本次购买爆破物品信息" width="360px"> </el-table-column>
                     <el-table-column label="运输时间"  width="240px">
                         <template slot-scope="scope" > 
-                            <span v-if="scope.row.status==0">-</span>
-                            <span v-if="scope.row.status==1 || scope.row.status==2">{{scope.row.transportTime}}</span>
+                            <span v-if="!scope.row.transportTime">-</span>
+                            <span v-else>{{scope.row.transportTime}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="applyTime" label="申请时间"  width="240px"></el-table-column>
                     <el-table-column prop="status" label="审批状态"  width="200px"  :formatter='formatState'></el-table-column>
                     <el-table-column label="许可证">
                         <template slot-scope="scope" > 
-                            <span v-if="scope.row.status==0">-</span>
-                            <el-button type="text" size="small" v-if="scope.row.status==1">上传许可证</el-button>
-                            <span v-if="scope.row.status==2 || scope.row.status==3">已上传</span>
+                            <span v-if="scope.row.status==0 || scope.row.status==2">-</span>
+                            <span v-if="scope.row.status==3">已上传</span>
+                            <el-button type="text" size="small" @click = "handleDetail(scope.row.id,scope.row.transportTime)"  v-if="scope.row.status==1">上传许可证</el-button>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small"  @click = "handleDetail(scope.row.id)">查看</el-button>
+                            <el-button type="text" size="small"  @click = "handleDetail(scope.row.id,scope.row.transportTime)">查看</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -59,10 +59,13 @@
                  <el-form ref="form" :model="form"  label-width="0" class="project-form" style="margin:-20px 0 20px 0;">
                     <el-row :gutter="40">
                         <el-col :span="12">
-                            <el-form-item label="项目：" label-width="140" >
+                            <el-form-item label="项目：" label-width="140" v-if="details.status!=2">
                                 <el-autocomplete  popper-class="my-autocomplete"  v-model="diaglog.state" :fetch-suggestions="querySearch" placeholder="请输入内容" @select="handleSelect" style="width:100%;">
                                     <template slot-scope="{ item }"><div class="name">{{ item.value }}</div></template>
                                 </el-autocomplete>
+                            </el-form-item>
+                            <el-form-item label="项目：" label-width="140" v-else>
+                                <el-input v-model="diaglog.state" :disabled="true"></el-input>
                             </el-form-item>
                             <el-form-item label="项目级别：" label-width="140">
                                 <el-input v-model="publics.Filters.convert(company.projectLevel || 0).projectLevel()" :disabled="true"></el-input>
@@ -100,6 +103,7 @@
                         </tr>
                     </tbody>
                 </table>
+              
                 <el-form ref="form" :model="form"  label-width="0" class="project-form" status-icon :rules="rules" :disabled='show==1'>
                     <table  border="1" class="table" width="100%"  v-if="company.projectId">
                         <thead>
@@ -142,7 +146,7 @@
                                 <td>数量（发)</td>
                                 <td>操作</td>
                             </tr>
-                            <tr  v-for="(i,index) in form.blastlist.lg" >
+                            <tr  v-for="(i,index) in form.blastlist.lg">
                                 <td>
                                     <el-select v-model="i.pyrotechnicsName" placeholder="请选择">
                                         <el-option :label="j" :value="j" v-for="(j,ind) in form.blasttype.lgtype" :key="j"></el-option>
@@ -194,8 +198,8 @@
                         </tbody>
                     </table>
                 </el-form>
-                <div class="subbtn" v-if="blastlist && !test.show">
-                    <el-button type="primary" @click="sub('form')">提交申请</el-button>
+                <div class="subbtn" v-if="blastlist && details.status==0">
+                    <el-button type="primary" @click="sub('form')" >提交申请</el-button>
                 </div>
             </div>
             <div v-else>        <!--查看-->
@@ -260,10 +264,10 @@
                                 <td>{{i.pyrotechnicsName}}</td>
                                 <td>
                                     <div  class="lgsml">
-                                        <el-input v-model="i.pyrotechnicsModel.d">
+                                        <el-input v-model="i.pyrotechnicsModel.d" :disabled="true"> 
                                             <template slot="append">段</template>
                                         </el-input>
-                                        <el-input v-model="i.pyrotechnicsModel.m" @blur="zyblur(index,i.pyrotechnicsModel,i.pyrotechnicsName,1)">
+                                        <el-input v-model="i.pyrotechnicsModel.m" :disabled="true">
                                             <template slot="append">米</template>
                                         </el-input>
                                     </div>
@@ -293,36 +297,55 @@
                     </table>
             </div>
             <div class="upbook" v-if="details.status>0">
-                <div class="h2">审核信息</div>
-                <div class="psinfo" v-if="details.status==1">
-                      <el-form :model="newForm" ref = "newForm" :rules="rules" >
+                <div class="jgarea">
+                    <img src="../../assets/img/err.png" v-if="details.status==2">
+                    <dl>
+                        <dt>审核信息</dt>
+                        <dd v-for="(i,index) in details.projectSecurityApprovalDTOList">
+                            <font color="#39ad00" v-if="i.status==0" >[申请]</font>
+                            <font color="#f00" v-if="i.status==3 || i.status==1" >[驳回]</font>
+                            <font color="#39ad00" v-if="i.status==4 || i.status==2">[同意]</font>
+                            <span>{{i.opinion}}</span>
+                            (<span>{{i.deptName}}</span>,<span>{{i.approvalManName}}</span>,<span>{{publics.Filters.timer(i.approvalTime)}}</span>)
+                        </dd>
+                    </dl>
+                </div>
+                <div class="psinfo" v-if="details.status==1 || details.status==3">
+                      <el-form :model="newForm" ref = "newForm"  :rules="rules" :disabled="details.status==3">
                         <el-row :gutter="40">
                             <el-col :span="12">
                                 <el-form-item label="运输起点" label-width="80" prop='startAddress'  :rules="[{ required: true, message: '运输起点不能为空'}]">
-                                    <el-input v-model="newForm.startAddress" @keyup.native="newForm.startAddress = newForm.startAddress.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
+                                    <el-input v-model="newForm.startAddress" @keyup.native="newForm.startAddress = newForm.startAddress.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')" ></el-input>
                                 </el-form-item>
                                 <el-form-item label="运输终点" label-width="80">
-                                    <el-input v-model="details.warehouseName" :disabled="true"></el-input>
+                                    <el-input v-model="details.warehouseAddress" :disabled="true"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="有效期至" label-width="80" prop='validityTime'  :rules="[{ required: true, message: '有效期不能为空'}]">
-                                    <el-date-picker type="date" v-model="newForm.validityTime" style="width: 100%;"></el-date-picker>
+                                    <el-date-picker type="date" v-model="newForm.validityTime" style="width: 100%;" value-format="timestamp" :picker-options="pickerOptions0" ></el-date-picker>
                                 </el-form-item>
-                                <el-form-item label="配送时间" label-width="80" prop='transportTime'  :rules="[{ required: true, message: '运输终点不能为空'}]">
-                                    <el-date-picker type="date" v-model="newForm.transportTime" style="width: 100%;"></el-date-picker>
+                                <el-form-item label="配送时间" label-width="80" prop='transportTime'  :rules="[{ required: true, message: '运输终点不能为空'}]" v-if="newForm.validityTime">
+                                    <el-date-picker type="date" v-model="newForm.transportTime" style="width: 100%;"  value-format="timestamp" :picker-options="pickerOptions0" @change="cktime"></el-date-picker></el-date-picker>
                                 </el-form-item>
                             </el-col>
                              <el-col :span = '12'>
-                                <el-form-item label="驾驶证照片（反面）" prop="regLicense" :rules="[{ required: true, message: '请上传照片'}]" >
+                                <el-form-item label="上传运输许可证" prop="transportImg" :rules="[{ required: true, message: '请上传照片'}]" class="upimg">
                                     <div class="uploadpic">
-                                        <File :data="upload[0]" @bindValue="newForm.regLicense = upload[0].url" ></File>
+                                        <File :data="upload[0]" @bindValue="newForm.transportImg = upload[0].url"  :look = 'newForm.status'></File>
                                     </div>
                                 </el-form-item>
                             </el-col>
                         
                         </el-row>
+                        <div class="btn">
+                             <el-button type="primary" @click="uploadxkz('newForm')" v-if="details.status==1">确认提交</el-button>
+                        </div>
                     </el-form>
+                </div>
+                <div class="btn">
+                      <el-button type="primary" v-if="details.status==2 && show!=2" @click='again'>重新申请</el-button>
+                      <el-button type="primary" @click="sub('form',1)" v-if="details.status==2 && show==2">提交申请</el-button>
                 </div>
             </div>
         </el-dialog> 
@@ -333,6 +356,11 @@
     export default {
         data(){
             return {
+                pickerOptions0:{
+                    disabledDate(time) {
+                        return time.getTime() < Date.now() - 8.64e7;
+                    }
+                },
                 dataList:null,
                 blastlist:null,          //炸弹余量
                 show:0,     //切换      0列表 1查看 2新增 
@@ -340,15 +368,15 @@
                 page:1,
                 size:10,
                 total:0,
-
                 SearchDTO:{
                     multiCondition:'',//搜索框
-                    status:'',//状态
+                    status:"",//状态
                     statuslist:[
                         {value:"",text:'全部'},
                         {value:0,text:'待审批'},
                         {value:1,text:'已通过'},
                         {value:2,text:'已驳回'},
+                        {value:3,text:'已上传许可证'},
                     ],
                     showSearch:false,//是否激活搜索
                 },
@@ -362,12 +390,13 @@
                      state:''
                 },
                 details:{},
-                newForm:{
+                newForm:{   //上传许可证form
                     startAddress:"",
                     validityTime:"",
                     transportTime:"",
-                    regLicense:""
-                },             //上传许可证form
+                    transportImg:"",
+                    stauts:false,
+                },             
                 upload:[{type:0,dataurl:'',url:''}],
                 form:{                  //购买初始form
                        blasttype:{              //炸药类型
@@ -437,12 +466,130 @@
             File:file
         },
         methods:{
+            /*  {value:0,text:'待审批'},
+                        {value:1,text:'已通过'},
+                        {value:2,text:'已驳回'},
+                        {value:3,text:'已上传许可证'}, */
+            cktime(val){
+               if(val>this.newForm.validityTime){
+                   this.newForm.transportTime=this.newForm.validityTime
+               }
+            },            
+            tableRowClassName(row) {
+                if (row.row.status == 0) {
+                    return 'blue';
+                } else if (row.row.status == 2) {
+                    return 'red';
+                } else if (row.row.status == 1 || row.row.status == 3) {
+                    return 'green';
+                }else
+                    return ''
+                 
+            },
+            again(){        //重新申请
+                let details=this.details;
+                this.diaglog.state=details.projectName;
+                this.company={
+                    projectLevel:details.projectLevel,
+                    order:details.order,
+                    warehouseName:details.warehouseName,
+                    projectId:details.projectId
+                }
+                this.blastlist=details.projectPurchaseNumberList;
+                let blastlist={zy:[],lg:[],dbg:null,dbs:null};
+                for(let val of details.pyrotechnics){
+                    if(val.pyrotechnicsType==1){
+                        blastlist.zy.push(val)
+                    }
+                    else if(val.pyrotechnicsType==2){
+                        blastlist.lg.push(val)
+                    }
+                    else{
+                        if(val.pyrotechnicsModel==1){
+                            blastlist.dbg=val
+                        }else{
+                            blastlist.dbs=val
+                        }
+                    }
+                }
+                if(blastlist.zy.length==0){
+                    blastlist.zy=[{           
+                        pyrotechnicsModel:"",          
+                        pyrotechnicsName:"",           
+                        pyrotechnicsNumber:"",          
+                        pyrotechnicsType:1,            
+                        pyrotechnicsUnit:"千克",      
+                   }]
+                }
+                if(blastlist.lg.length==0){
+                    blastlist.lg=[ {
+                        pyrotechnicsModel:{d:"",m:""},  
+                        pyrotechnicsName:"",           
+                        pyrotechnicsNumber:"",         
+                        pyrotechnicsType:2,             
+                        pyrotechnicsUnit:"发",        
+                    }]
+                }
+                if(blastlist.dbg==null){
+                    blastlist.dbg={           
+                        pyrotechnicsModel:"1",          
+                        pyrotechnicsName:"导爆物",      
+                        pyrotechnicsNumber:"",        
+                        pyrotechnicsType:3,            
+                        pyrotechnicsUnit:"米",         
+                    }
+                            
+                }
+                if(blastlist.dbs==null){
+                    blastlist.dbs={
+                        pyrotechnicsModel:"2",        
+                        pyrotechnicsName:"导爆物",   
+                        pyrotechnicsNumber:"",      
+                        pyrotechnicsType:3,         
+                        pyrotechnicsUnit:"米",     
+                    }
+                }
+                this.form.blastlist=blastlist;
+                this.show=2
+            },
+            pageChange(i){
+                this.page=i;
+                this.init();
+            },
+            uploadxkz(formName){
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.publics.AJAX.$POST({
+                            url:"purchase/updateLicense",
+                            data:{
+                                "id": this.details.id,
+                                "regLicense": {
+                                    "startAddress": this.newForm.startAddress,
+                                    "transportImg": this.newForm.transportImg,
+                                    "transportTime": this.newForm.transportTime,
+                                    "validityTime": this.newForm.validityTime
+                                },
+                                "updateMan": this.user.userId
+                            },
+                            success:(e)=>{
+                                this.$message({
+                                    type:"success",
+                                    message:"上传许可证成功！"
+                                })
+                                setTimeout(e=>{
+                                    window.history.go(0)
+                                },1000)
+                            }
+                        })
+                    }
+                })
+            },
             handleDetail(id){
                 this.publics.AJAX.$POST({
                     url:"purchase/detail/"+id,
                     success:(e)=>{
                         let details=e;
-                        details.blastlist={zy:[],lg:[],dbs:{},dbg:{}}
+                        details.blastlist={zy:[],lg:[],dbs:null,dbg:null}
                         for(let val of e.pyrotechnics){
                             if(val.pyrotechnicsType==1){
                                  details.blastlist.zy.push(val)
@@ -462,54 +609,122 @@
                                 }
                             }
                         }
+                        if(details.blastlist.zy.length==0){
+                            details.blastlist.zy=[{           
+                                    pyrotechnicsModel:"/",          
+                                    pyrotechnicsName:"/",           
+                                    pyrotechnicsNumber:"/",          
+                                    pyrotechnicsType:1,            
+                                    pyrotechnicsUnit:"千克",      
+                                }
+                            ]
+                        }
+                        if(details.blastlist.lg.length==0){
+                            details.blastlist.lg=[ {
+                                    pyrotechnicsModel:{d:"/",m:"/"},  
+                                    pyrotechnicsName:"/",           
+                                    pyrotechnicsNumber:"/",         
+                                    pyrotechnicsType:2,             
+                                    pyrotechnicsUnit:"发",        
+                            },]
+                        }
+                        if(details.blastlist.dbg==null){
+                            details.blastlist.dbg={           
+                                    pyrotechnicsModel:"1",          
+                                    pyrotechnicsName:"导爆物",      
+                                    pyrotechnicsNumber:"/",        
+                                    pyrotechnicsType:3,            
+                                    pyrotechnicsUnit:"米",         
+                            }
+                            
+                        }
+                        if(details.blastlist.dbs==null){
+                            details.blastlist.dbs={
+                                    pyrotechnicsModel:"2",        
+                                    pyrotechnicsName:"导爆物",   
+                                    pyrotechnicsNumber:"/",      
+                                    pyrotechnicsType:3,         
+                                    pyrotechnicsUnit:"米",     
+                            }
+                        }
+                        console.log(details.blastlist)
+                        if(e.status==3){
+                            this.newForm=e.regLicense
+                            this.upload[0].url=this.upload[0].dataurl=e.regLicense.transportImg;
+                        }
+                        else{
+                            this.newForm={  
+                                startAddress:"",
+                                validityTime:"",
+                                transportTime:"",
+                                transportImg:"",
+                            }
+                            this.upload[0].dataurl="";
+                            this.upload[0].url=""
+                        }
+                       
                         this.show=1;
                         this.diaglog.show=true;
                         this.details=details;
+                        setTimeout(s=>{
+                             if(e.status==1){
+                                // this.$refs['newForm'].resetFields()
+                                this.$refs['newForm'].clearValidate()
+                            }
+                        },100)
                         console.log(details)
                     }
                 })
             },
-            sub(formName){
+            sub(formName,type){
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        let zyNum=0,lgNum=0;
-                        for(let val of this.form.blastlist.zy){
-                            if(!val.pyrotechnicsNumber || !val.pyrotechnicsModel){
+                        let pyrotechnics=[];
+                        let cloneblast=JSON.parse(JSON.stringify(this.form.blastlist));
+                        if(cloneblast.zy[0].pyrotechnicsName){
+                            let zyNum=0;
+                            for(let val of cloneblast.zy){
+                                if(!val.pyrotechnicsNumber || !val.pyrotechnicsModel){
+                                    this.$message({
+                                        message:"请填写完炸药信息",
+                                        type:"error"
+                                    })
+                                    return false;
+                                }
+                                zyNum +=parseInt(val.pyrotechnicsNumber)
+                            }
+                            if(zyNum>this.blastlist[1].zaYao){
                                 this.$message({
-                                    message:"请填写完炸药信息！",
+                                    message:"炸药超过购买量",
                                     type:"error"
                                 })
                                 return false;
                             }
-                            zyNum +=parseInt(val.pyrotechnicsNumber)
+                           pyrotechnics=pyrotechnics.concat(cloneblast.zy)
                         }
-                        for(let val of this.form.blastlist.lg){
-                            lgNum +=parseInt(val.pyrotechnicsNumber)
-                        }
-                        if(zyNum>this.blastlist[1].zaYao){
-                             if(!val.pyrotechnicsNumber ){
+                        if(cloneblast.lg[0].pyrotechnicsName){
+                            let lgNum=0;
+                            for(let val of cloneblast.lg){
+                                if((!val.pyrotechnicsModel.d || !val.pyrotechnicsModel.m)){
+                                    this.$message({
+                                        message:"请填写完雷管信息",
+                                        type:"error"
+                                    })
+                                    return false;
+                                }
+                                lgNum +=parseInt(val.pyrotechnicsNumber)
+                                val.pyrotechnicsModel=val.pyrotechnicsModel.d+"-"+val.pyrotechnicsModel.m
+                            }
+                            if(lgNum>this.blastlist[1].leiGuan){
                                 this.$message({
-                                    message:"请填写完雷管信息！",
+                                    message:"雷管超过购买量",
                                     type:"error"
                                 })
                                 return false;
                             }
-                            this.$message({
-                                message:"炸药超过购买量",
-                                type:"error"
-                            })
-                            return false;
+                            pyrotechnics=pyrotechnics.concat(cloneblast.lg)
                         }
 
-                        if(lgNum>this.blastlist[1].leiGuan){
-                            this.$message({
-                                message:"雷管超过购买量",
-                                type:"error"
-                            })
-                            return false;
-                        }
-                        //daoBaoSuo
-                        
                         if(parseInt(this.form.blastlist.dbg.pyrotechnicsNumber)>this.blastlist[1].daoBaoGuan){
                             this.$message({
                                 message:"导爆管超过购买量",
@@ -525,42 +740,72 @@
                             })
                             return false;
                         }   
-                        let cloneblast=JSON.parse(JSON.stringify(this.form.blastlist));
-                        for(let val of cloneblast.lg){
-                            val.pyrotechnicsModel=val.pyrotechnicsModel.d+"-"+val.pyrotechnicsModel.m
-                        }
-                        let pyrotechnics=[...cloneblast.zy,...cloneblast.lg];
+                        
+                        //let pyrotechnics=[...cloneblast.zy,...cloneblast.lg];
+                        
                         if(parseInt(this.form.blastlist.dbs.pyrotechnicsNumber)>0){
                             pyrotechnics.push(cloneblast.dbs)
                         }
                         if(parseInt(this.form.blastlist.dbg.pyrotechnicsNumber)>0){
                             pyrotechnics.push(cloneblast.dbg)
                         }
+                        if(pyrotechnics.length==0){
+                            this.$message({
+                                message:"至少购买一种火工品",
+                                type:"error"
+                            })
+                            return false;
+                        }
                         let dto = {
-                            "createMan": this.user.userId,
-                            "projectId": this.company.projectId,
                             "pyrotechnics":pyrotechnics
                         }
-                        this.$confirm('申请购买, 是否继续?', '提示', {
-                            confirmButtonText: '确定',
-                            cancelButtonText: '取消',
-                            type: 'warning'
-                        }).then(() => {
-                              this.publics.AJAX.$POST({
-                                url:"purchase/buy",
-                                data:dto,
-                                success:(e)=>{
-                                    this.diaglog.show=false;
-                                    this.$message({
-                                        type:"success",
-                                        message:"购买成功！"
-                                    })
-                                    setTimeout(e=>{
-                                        window.history.go(0)
-                                    },1000)
-                                }   
+                        if(type==1){
+                            dto.id=this.details.id,
+                            dto.updateMan=this.user.userId;
+                            this.$confirm('重新申请购买, 是否继续?', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+                                this.publics.AJAX.$POST({
+                                    url:"purchase/upd",
+                                    data:dto,
+                                    success:(e)=>{
+                                        this.diaglog.show=false;
+                                        this.$message({
+                                            type:"success",
+                                            message:"重新申请购买成功！"
+                                        })
+                                        setTimeout(e=>{
+                                            window.history.go(0)
+                                        },1000)
+                                    }   
+                                })
                             })
-                        })
+                        }else{
+                            dto.projectId=this.company.projectId;
+                            dto.createMan=this.user.userId;
+                            this.$confirm('申请购买, 是否继续?', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+                                this.publics.AJAX.$POST({
+                                    url:"purchase/buy",
+                                    data:dto,
+                                    success:(e)=>{
+                                        this.diaglog.show=false;
+                                        this.$message({
+                                            type:"success",
+                                            message:"购买成功！"
+                                        })
+                                        setTimeout(e=>{
+                                            window.history.go(0)
+                                        },1000)
+                                    }   
+                                })
+                            })
+                        }
                     } else {
                         console.log('error submit!!');
                         return false;
@@ -620,9 +865,9 @@
             addblast(like,index){
                 if(like==0){
                     for(let val of this.form.blastlist.zy){
-                        if(!val.pyrotechnicsModel){ this.$message({type:"error",message:"信息需调整"});return false;}
-                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"信息需调整"});return false;}
-                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"信息需调整"});return false;}
+                        if(!val.pyrotechnicsModel){ this.$message({type:"error",message:"请填写火工品型号"});return false;}
+                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"请填写火工品数量"});return false;}
+                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"请选择火工品品名"});return false;}
                     }
                     let key={           
                         pyrotechnicsModel:"",  
@@ -635,9 +880,9 @@
                 }else{
                      for(let val of this.form.blastlist.lg){
                         console.log(val)
-                        if(!val.pyrotechnicsModel.d || !val.pyrotechnicsModel.m){ this.$message({type:"error",message:"信息需调整"});return false;}
-                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"信息需调整"});return false;}
-                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"信息需调整"});return false;}
+                        if(!val.pyrotechnicsModel.d || !val.pyrotechnicsModel.m){ this.$message({type:"error",message:"请填写雷管段别"});return false;}
+                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"请填写雷管数量"});return false;}
+                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"请选择雷管类型"});return false;}
                     }
                     let key={           
                         pyrotechnicsModel:{d:"",m:""},  
@@ -671,12 +916,15 @@
                         "userId": this.user.userId
                     },
                     success:(e)=>{
-                        console.log(e)
                        for(let val of e.list){
+                          if(val.transportTime){
+                             val.transportTime=this.publics.Filters.timer(val.transportTime)
+                          }
                           val.applyTime=this.publics.Filters.timer(val.applyTime)
                        }
-                       this.total=e.total;
+                       this.total=e.count;
                        this.dataList=e.list;
+                       console.log(e)
                     }
                 })
             },
@@ -704,7 +952,9 @@
                 this.show=0;
                 this.diaglog.state="";
                 this.diaglog.show=false;
+               
             },
+            
             formatState(res){
                 let status=["未审批","通过","未通过","已上传许可证"];
                 return status[res.status];
@@ -724,8 +974,70 @@
                 return "炸药："+zynum+"公斤，雷管："+lgnum+"发，工业索类："+gysnum+"米"*/
             },
             handleSelect(val){
+               
+                 if(val.status==3){
+                    this.$message({
+                        type:"error",
+                        message:"该项目正在修改中"
+                    })
+                    this.diaglog.state=""
+                    return false;
+                }
+                if(val.status==4){
+                    this.$message({
+                        type:"error",
+                        message:"该项目正在购买中"
+                    })
+                    this.diaglog.state=""
+                    return false;
+                }
+                 if(val.status==5){
+                    this.$message({
+                        type:"error",
+                        message:"该项目有购买申请被驳回"
+                    })
+                    this.diaglog.state=""
+                    this.diaglog.show=false;
+                    this.show=0;
+                    return false;
+                }
                 this.company=val;
+                this.details.status=0;
                 this.getblast(val.projectId)
+                this.form.blastlist={
+                            zy:[{           
+                                    pyrotechnicsModel:"",           //火工品型号 
+                                    pyrotechnicsName:"",            //火工品名称 ,
+                                    pyrotechnicsNumber:"",          //火工品数量 ,
+                                    pyrotechnicsType:1,             //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
+                                    pyrotechnicsUnit:"千克",          // 火工品单位
+                                }, 
+                            ],
+                            lg:[
+                                {
+                                    pyrotechnicsModel:{d:"",m:""},  //火工品型号 
+                                    pyrotechnicsName:"",            //火工品名称 ,
+                                    pyrotechnicsNumber:"",          //火工品数量 ,
+                                    pyrotechnicsType:2,             //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
+                                    pyrotechnicsUnit:"发",          // 火工品单位
+                                },
+                            ],
+                            dbg:{
+                                    pyrotechnicsModel:"1",           //火工品型号 
+                                    pyrotechnicsName:"导爆物",       //火工品名称 ,
+                                    pyrotechnicsNumber:"",          //火工品数量 ,
+                                    pyrotechnicsType:3,             //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
+                                    pyrotechnicsUnit:"米",          // 火工品单位
+                            },
+                            dbs:{
+                                    pyrotechnicsModel:"2",        //火工品型号 
+                                    pyrotechnicsName:"导爆物",    //火工品名称 ,
+                                    pyrotechnicsNumber:"",       //火工品数量 ,
+                                    pyrotechnicsType:3,          //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
+                                    pyrotechnicsUnit:"米",       // 火工品单位
+                            }
+                            
+                }
             },
             addNewForm(){
                 this.show=2;
@@ -750,6 +1062,27 @@
 </script>
 <style lang="scss">
     .blastbuy{
+        .jgarea{
+            position: relative;
+            img{
+                width:150px;
+                right:40px;
+                position: absolute;
+                top:-30px;
+            }
+            dt{
+                line-height: 30px;
+                font-size: 16px;
+                color:#333;
+            }
+            dd{
+                line-height: 24px;
+            }
+            span{
+                display: inline-block;
+                padding:0 4px;
+            }
+        }
         .my-autocomplete {
             li {
                 line-height: normal;
@@ -769,6 +1102,15 @@
                 }
             }
         }
+         .red td:nth-child(5){
+                color:#f00;
+            }
+            .blue td:nth-child(5){
+                color:#03A9F4;
+            }
+             .green td:nth-child(5){
+                color:#0e9b0e;
+          }
         .table{
             border-collapse: collapse;
             text-align: center;
@@ -841,6 +1183,7 @@
                 }
                 
             }
+           
             .el-range-editor.is-disabled{
                 background: none!important;
             }
@@ -876,6 +1219,10 @@
             margin-top:30px;
             text-align: center;
         }
+        .btn{
+            margin-top:30px;
+            text-align: center;
+        }
         .el-input.is-disabled .el-input__inner{
             background: none;
             text-align: center;
@@ -884,6 +1231,16 @@
         .uploadpic{
             width:200px;
             height:200px;
+        }
+        .el-input__inner{
+            text-align: center;
+        }
+        .upimg{
+            width:200px;
+            .el-form-item__error{
+                width:100%;
+                text-align: center;
+            }
         }
     }
 </style>

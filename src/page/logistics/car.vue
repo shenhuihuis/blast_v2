@@ -128,7 +128,7 @@
                         <el-col :span = '3'>发动机号码</el-col>
                         <el-col :span = '3'>
                             <el-form-item prop='engineNumber'  :rules="[{ required: true }]">
-                                <el-input v-model="newForm.engineNumber "  @keyup.native="newForm.engineNumber = newForm.engineNumber.replace(/\D/g,'')"></el-input>
+                                <el-input v-model="newForm.engineNumber"  @keyup.native="newForm.engineNumber = newForm.engineNumber.replace(/\D/g,'')"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
