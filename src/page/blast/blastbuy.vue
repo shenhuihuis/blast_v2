@@ -377,6 +377,7 @@
                         {value:1,text:'已通过'},
                         {value:2,text:'已驳回'},
                         {value:3,text:'已上传许可证'},
+                        {value:4,text:'已完成'},
                     ],
                     showSearch:false,//是否激活搜索
                 },

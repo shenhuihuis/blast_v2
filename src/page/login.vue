@@ -121,6 +121,7 @@ export default {
            let load = this.$loading({
             text: "正在登录中!请稍等..."
            });
+          
            let Menu=res.sysMenuIds.chidren,auth;
            for(let val of this.publics.Config.companyType){
               if(val.id==res.sysMenuIds.id){
@@ -129,6 +130,7 @@ export default {
            }
            auth.userId=res.userId
            this.publics.Cookie.set("token",res.token);
+           Menu.push({id:"AAAA"});
            sessionStorage.setItem("menu",this.publics.DES.encode(JSON.stringify(Menu)));
            sessionStorage.setItem("auth",this.publics.DES.encode(JSON.stringify(auth)));
            setTimeout(e => {

@@ -5,20 +5,24 @@
       <happy-scroll>
         <ul :style="{'height':hei+'px'}">
           <li v-for="(i,index) in slides" :class="{'drap':i.children}">
-            <router-link :to="{'name':i.router,params:{tit:i.tit}}" :class="{'curs':i.checked || current==index}" >
-            <!-- <router-link :to="{'name':i.router}" :class="{'curs':i.checked}"  @click.native="routerlink($event)"> -->
-              <div class="tit">
-                <i class="iconfont" v-html="i.ico"></i> {{i.tit}}
-                <i class="triangle"></i>
-              </div>
-            </router-link>
-            <!-- <dl v-if='i.children && i.show'>
-              <dd v-for="j in i.children">
-                <router-link :to="{'name':j.router}" href="javascript:void(0);">
-                  <div class="tit">{{j.tit}}</div>
-                </router-link>
-              </dd>
-            </dl> -->
+            <div v-for="j in menu" v-if="i.id==j.id">
+              <router-link :to="{'name':i.router,params:{tit:i.tit}}" :class="{'curs':i.checked || current==index}" >
+              <!-- <router-link :to="{'name':i.router}" :class="{'curs':i.checked}"  @click.native="routerlink($event)"> -->
+                <div class="tit">
+                  <i class="iconfont" v-html="i.ico"></i> {{i.tit}}
+                  <i class="triangle"></i>
+                </div>
+              </router-link>
+              <dl v-if='i.children'>
+                <dd v-for="m in i.children">
+                  <div v-for="k in j.chidren" v-if="m.id==k.id">
+                    <router-link :to="{'name':m.router}">
+                      <div class="tit">{{m.tit}}</div>
+                    </router-link>
+                  </div>
+                </dd>
+              </dl>
+            </div>
           </li>
         </ul>
       </happy-scroll>
@@ -32,45 +36,37 @@
     HappyScroll
   } from 'vue-happy-scroll'
   import 'vue-happy-scroll/docs/happy-scroll.css'
-  export default {  
+  export default {
     props: ["current"],     //sign
     data() {
       return {
         company:"",
         hei: document.body.scrollHeight - 108,
-        slides: [],
+        slides:null,
+        menu:[]
       }
     },
     created() {
-      let routes = router.router;
-      if(sessionStorage.getItem("auth")){
-          let type=this.publics.global().auth.type
-          switch (type) {
-            case "0":
-              this.slides = routes.blast;
-              this.company="爆破公司";
-              break;
-            case "1":
-              this.slides = routes.project;
-              this.company="监理公司";
-              break;
-            case "2":
-              this.slides = routes.logistics;
-              this.company="配送公司";
-              break;
-            case "3":
-              this.slides = routes.depot;
-              this.company="仓库公司";
-              break;
-            case "4":
-              this.slides = routes.police;
-              break;
-          }
-          this.router();
-            
-       }else{
-         this.$router.push({name:'login'})
-       }
+      if(sessionStorage.getItem("menu")){
+        let menu=JSON.parse(this.publics.DES.decode(sessionStorage.getItem("menu")));
+       // let auth=this.publics.
+        this.menu=menu;
+        let type=this.publics.global().auth.type;
+        if(type==0){
+          this.slides=router.router.blast;
+        }else if(type==1){
+          this.slides=router.router.project;
+        }
+        else if(type==2){
+          this.slides=router.router.logistics;
+        }
+        else{
+          this.slides=router.router.depot;
+        }
+        this.router();
+      }else{
+        this.$router.push({name:'login'})
+      }
       
     },
     components: {
@@ -114,4 +110,3 @@
     }
   }
 </style>
-

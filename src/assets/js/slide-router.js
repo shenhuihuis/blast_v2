@@ -1,11 +1,11 @@
 export default{
     router:{
       blast:[     //爆破
-        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页'},
+        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页',id:'AAAA'},
         { router:'management',ico:'&#xe61e;',checked:false,id:'2476',tit:'人员管理'},
         { router:'project',ico:'&#xe61e;',checked:false,id:'b5e6',tit:'爆破项目登记管理'},
         { router:'projectChange',ico:'&#xe61e;',checked:false,id:'0da2',tit:'项目变更'},
-        { router:'blastbuy',ico:'&#xe61e;',checked:false,id:'eb84',tit:'民爆物品购买申请'},
+        { router:'blastbuy',ico:'&#xe61e;',checked:false,id:'1f06',tit:'民爆物品购买申请'},
         // { router:'home',ico:'&#xe61e;',checked:false,id:'0da2',tit:'变更记录'},
         // { router:'home',ico:'&#xe61e;',checked:false,id:'5863',tit:'作业现场视频管理'},
         { router:'notice',ico:'&#xe61e;',checked:false,id:'0b5b',tit:'通知公告'},
@@ -20,10 +20,10 @@ export default{
         { router:'notice',ico:'&#xe61e;',checked:false,id:'4861',tit:'通知公告'},
         { router:'message',ico:'&#xe61e;',checked:false,id:'e0e1',tit:'消息'},
       ],
-      police:[    //公安 
-        { router:'policeIndex',ico:'&#xe61e;',checked:false,tit:'首页'},
-        { router:'management',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
-      ],
+      // police:[    //公安 
+      //   { router:'policeIndex',ico:'&#xe61e;',checked:false,tit:'首页'},
+      //   { router:'management',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
+      // ],
       logistics:[   //配送
         { router:'home',ico:'&#xe61e;',checked:false,tit:'首页'},
         { router:'management',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
