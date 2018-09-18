@@ -521,7 +521,7 @@
                 }
                 if(blastlist.zy.length==0){
                     blastlist.zy=[{           
-                        pyrotechnicsModel:"",          
+                      //  pyrotechnicsModel:"",          
                         pyrotechnicsName:"",           
                         pyrotechnicsNumber:"",          
                         pyrotechnicsType:1,            
@@ -531,7 +531,7 @@
                 if(blastlist.lg.length==0){
                     blastlist.lg=[ {
                         pyrotechnicsModel:{d:"",m:""},  
-                        pyrotechnicsName:"",           
+                        pyrotechnicsName:"雷管",           
                         pyrotechnicsNumber:"",         
                         pyrotechnicsType:2,             
                         pyrotechnicsUnit:"发",        

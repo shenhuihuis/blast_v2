@@ -56,8 +56,11 @@
                             <el-input v-model="form.projectAddress" :disabled='true'></el-input>
                         </td>
                         <td width="100">作业时间</td>
-                        <td width="150" class="pred">
+                        <td width="150" class="pred" v-if="show==1">
                             <el-date-picker  v-model="form.worktime"  type="datetimerange" @change="dataFloat"  start-placeholder="开始日期"  value-format="timestamp" end-placeholder="结束日期"></el-date-picker>                      
+                        </td>
+                        <td width="150" v-else>
+                            <el-date-picker  v-model="form.worktime"  type="datetimerange"   start-placeholder="开始日期"  value-format="timestamp" end-placeholder="结束日期"></el-date-picker>                      
                         </td>
                     </tr>
                 </table>
@@ -117,28 +120,28 @@
                         <td>{{i.licenceNumber}}</td>
                         <td>{{i.staffId}}</td>
                     </tr>
-                    <tr class="point pred" @click="addStaff(true,2,4,6,'技术员')" v-for="i in listStaff.Brr.list.sonCrr.list">
+                    <tr :class="{'point pred':show==1}" @click="addStaff(true,2,4,6,'技术员')" v-for="i in listStaff.Brr.list.sonCrr.list">
                         <td>技术员</td>
                         <td>{{i.staffName}}</td>
                         <td>{{publics.Filters.convert(i.staffLevel).level()}}</td>
                         <td>{{i.licenceNumber}}</td>
                         <td>{{i.staffId}}</td>
                     </tr>
-                    <tr class="point pred" @click="addStaff(true,2,1,7,'爆破员')" v-for="i in listStaff.Brr.list.sonDrr.list">
+                    <tr :class="{'point pred':show==1}"  @click="addStaff(true,2,1,7,'爆破员')" v-for="i in listStaff.Brr.list.sonDrr.list">
                         <td>爆破员</td>
                          <td>{{i.staffName}}</td>
                         <td>/</td>
                         <td>{{i.licenceNumber}}</td>
                         <td>{{i.staffId}}</td>
                     </tr>
-                    <tr class="point pred" @click="addStaff(true,2,2,8,'安全员')" v-for="i in listStaff.Brr.list.sonErr.list">
+                    <tr :class="{'point pred':show==1}"  @click="addStaff(true,2,2,8,'安全员')" v-for="i in listStaff.Brr.list.sonErr.list">
                         <td>安全员</td>
                         <td>{{i.staffName}}</td>
                         <td>/</td>
                         <td>{{i.licenceNumber}}</td>
                         <td>{{i.staffId}}</td>
                     </tr>
-                    <tr class="point pred" @click="addStaff(true,2,3,9,'保管员')" v-for="i in listStaff.Brr.list.sonFrr.list">
+                    <tr :class="{'point pred':show==1}"  @click="addStaff(true,2,3,9,'保管员')" v-for="i in listStaff.Brr.list.sonFrr.list">
                         <td>保管员</td>
                         <td>{{i.staffName}}</td>
                         <td>/</td>
@@ -167,7 +170,7 @@
                         </td>
                         <td colspan="2">许可证有效期</td>
                         <td>
-                            <el-date-picker v-model="form.projectSecurityAndSupervisor[0].licenceExpireTime " type="date"  value-format="timestamp"  placeholder="选择日期"  :disabled="true"></el-date-picker>
+                            <el-date-picker v-model="form.projectSecurityAndSupervisor[0].licenceExpireTime" type="date"  value-format="timestamp"  placeholder="选择日期"  :disabled="true"></el-date-picker>
                         </td>
                     </tr>
                     <tr>
@@ -258,18 +261,18 @@
                             <el-input v-model="form.companyIdList[1].companyName" :disabled="true"></el-input>
                         </td>
                     </tr>
-                    <tr class="pred"> 
+                    <tr  :class="{'point pred':show==1}"> 
                         <td width="180">民爆物品</td>
                         <td width="124">炸药</td>
-                        <td width="100" class="point" @click="addblast(0)"><el-input v-model="form.projectPyrotechnicsList[0].pyrotechnicsNumber" :disabled="true"></el-input></td>
+                        <td width="100" :class="{'point':show==1}" @click="addblast(0)"><el-input v-model="form.projectPyrotechnicsList[0].pyrotechnicsNumber" :disabled="true"></el-input></td>
                         <td width="124">雷管</td>
-                        <td width="124" class="point" @click="addblast(1)"><el-input v-model="form.projectPyrotechnicsList[1].pyrotechnicsNumber" :disabled="true" ></el-input></td>
+                        <td width="124" :class="{'point':show==1}" @click="addblast(1)"><el-input v-model="form.projectPyrotechnicsList[1].pyrotechnicsNumber" :disabled="true" ></el-input></td>
                         <td width="124" >导爆管</td>
-                        <td width="124" class="point" @click="addblast(2)">
+                        <td width="124" :class="{'point':show==1}" @click="addblast(2)">
                             <el-input v-model="form.projectPyrotechnicsList[2].pyrotechnicsNumber" :disabled="true"></el-input>
                         </td>
                         <td width="124">导爆索</td>
-                        <td width="124" class="point" @click="addblast(3)">
+                        <td width="124" :class="{'point':show==1}" @click="addblast(3)">
                             <el-input v-model="form.projectPyrotechnicsList[3].pyrotechnicsNumber" :disabled="true"></el-input>
                         </td>
                     </tr>
@@ -362,17 +365,17 @@
                     policeIds: [],                   //省市区 { policeId: "",type: 0}
                     projectAddress: "",             // 作业地点 
                     projectPyrotechnicsList: [      //火⼯品列表
-                        {
+                       {
                           //  detonatorDto:"" ,       //雷管编号 可以为空 ,
-                            pyrotechnicsModel:"1",  //火工品型号 
+                         //   pyrotechnicsModel:"1",  //火工品型号 
                             pyrotechnicsName:"炸药",   //火工品名称 ,
                             pyrotechnicsNumber:"", //火工品数量 ,
                             pyrotechnicsType:1,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
-                            pyrotechnicsUnit:"Kg", // 火工品单位
+                            pyrotechnicsUnit:"千克", // 火工品单位
                         },
                         {
                        //     detonatorDto:"" ,       //雷管编号 可以为空 ,
-                            pyrotechnicsModel:"2",  //火工品型号 
+                       //     pyrotechnicsModel:"2",  //火工品型号 
                             pyrotechnicsName:"雷管",   //火工品名称 ,
                             pyrotechnicsNumber:"", //火工品数量 ,
                             pyrotechnicsType:2,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
@@ -380,7 +383,7 @@
                         },
                         {
                          //   detonatorDto:"" ,       //雷管编号 可以为空 ,
-                            pyrotechnicsModel:"3",  //火工品型号 
+                            pyrotechnicsModel:"1",  //火工品型号 
                             pyrotechnicsName:"导爆物",   //火工品名称 ,
                             pyrotechnicsNumber:"", //火工品数量 ,
                             pyrotechnicsType:3,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
@@ -388,7 +391,7 @@
                         },
                         {
                         //    detonatorDto:"" ,       //雷管编号 可以为空 ,
-                            pyrotechnicsModel:"4",  //火工品型号 
+                            pyrotechnicsModel:"2",  //火工品型号 
                             pyrotechnicsName:"导爆物",   //火工品名称 ,
                             pyrotechnicsNumber:"", //火工品数量 ,
                             pyrotechnicsType:3,  //火工品类型 1.炸药（乳化炸药 硝铵炸药） 2.雷管（火雷管 电雷管） 3.导爆物（导爆管 导爆索） ,
@@ -477,7 +480,8 @@
                     {type:2,dataurl:'',url:''},
                     {type:2,dataurl:'',url:''},
                 ],
-                remark:""
+                remark:"",
+                status:0    //状态管理
             }   
         },
         created(){
@@ -491,8 +495,9 @@
                     
                 }
             })
+           
             if(this.$route.query.id){
-                console.log(this.publics.DES.decode(this.$route.query.id))
+                
                 this.handleDetail(this.publics.DES.decode(this.$route.query.id))
             }
             
@@ -508,7 +513,7 @@
              this.publics.AJAX.$POST({
                  url:"project/"+id,
                  success:(e)=>{
-                    
+                    console.log(e)
                     e.worktime = [e.beginTime, e.endTime];
                     let policeIds=[],listStaff=this.listStaff;
                     for(let val of e.policeIds){
@@ -539,7 +544,12 @@
                     this.isedit=true;
                     this.listStaff=listStaff;
                     this.form=e;
-                    this.show=1;
+                    if(this.$route.query.t){
+                        this.show=0;
+                    }else{
+                        this.show=1;
+                    }
+                 //   this.show=1;
                  }
               })
             },  
@@ -752,6 +762,9 @@
                 }
             },
             addblast(index){
+                if(this.show==0){
+                    return false;
+                }
                  let arr=["新增炸药数","新增雷管数","新增导爆管","新增导爆索"]
                  this.$prompt('请输入'+arr[index], '新增', {
                     confirmButtonText: '确定',

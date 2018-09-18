@@ -4,7 +4,7 @@
            <dl>
                <dt>请选择变更项目</dt>
                <dd v-for="i in changeList">
-                   <a href="javascript:void(0)" @click="went(i.id)">{{i.name}}</a>
+                   <a href="javascript:void(0)" @click="went(i)">{{i.name}}</a>
                </dd>
            </dl>
         </el-dialog>
@@ -61,11 +61,11 @@
                 </el-table-column>
                 <el-table-column label="操作">
                 <template slot-scope="scope">
-                      <el-button type="text" size="small"  @click = "handleDetail(scope.row.id)">查看</el-button>
+                      <el-button type="text" size="small"  @click = "handleDetail(scope.row)">查看</el-button>
+                      <el-button type="text" size="small" v-if="scope.row.status==1">变更详情</el-button>
                       <!-- <el-button type="text" size="small"  @click = "completed(scope.row.id)"  v-if = 'scope.row.status == 0'>竣工</el-button> -->
                 </template>
                 </el-table-column>
-               
             </el-table>
             <div style="text-align:center">
                 <el-pagination
@@ -119,8 +119,24 @@
             
         },
         methods:{
-            went(id){
-                this.$router.push({'name':'Changedetails',query:{id:this.publics.DES.encode(id)}})
+            went(details){
+              //  if() 
+                let status=details.status;
+                if(status==3){
+                    this.$message({
+                        type:"error",
+                        message:"该项目正在修改中!"
+                    })
+                    return false;
+                }
+                 if(status==5){
+                    this.$message({
+                        type:"error",
+                        message:"该项目被驳回变更!"
+                    })
+                    return false;
+                }
+                this.$router.push({'name':'Changedetails',query:{id:this.publics.DES.encode(details.id)}})
             },
             disClose(){
                 this.diaglog.show=false;
@@ -128,8 +144,8 @@
             addNewForm(){
                 this.diaglog.show=true;
             },
-            handleDetail(id){         //查看详情
-                this.$router.push({'name':'Changedetails',query:{id:this.publics.DES.encode(id)}})
+            handleDetail(row){         //查看详情
+                this.$router.push({'name':'Changedetails',query:{id:this.publics.DES.encode(row.id),t:this.publics.DES.encode(row.status)}})
             },  
             searchAct(){
                 this.SearchDTO.showSearch = true;
@@ -149,7 +165,7 @@
                 this.init();
             },
             formatState(row){//列表状态过滤器
-                let messcode=["未完成","已竣工","已完成","修改中" ]
+                let messcode=["待审批","已通过","已驳回" ]
                 return messcode[row.status];
             },
             init(){
@@ -159,13 +175,13 @@
                         "page": 1,
                         "size": 10,
                         "projectName":"",
-                        "status":null,
+                        "status":this.SearchDTO.status,
                         "userId":this.user.userId
                     },
                     success:(e)=>{
                        for(let val of e.list){
-                        //    val.timer=this.publics.Filters.timer(val.newBeginTime)+" 至 "+this.publics.Filters.timer(val.newEndTime)
-                        //    val.examineTime=this.publics.Filters.timer(val.createDate)
+                           val.timer=this.publics.Filters.timer(val.newBeginTime)+" 至 "+this.publics.Filters.timer(val.newEndTime)
+                           val.examineTime=this.publics.Filters.timer(val.createDate)
                        }
                        console.log(e.list)
                        this.dataList=e.list;
