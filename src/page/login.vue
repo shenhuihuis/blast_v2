@@ -121,7 +121,6 @@ export default {
            let load = this.$loading({
             text: "正在登录中!请稍等..."
            });
-          
            let Menu=res.sysMenuIds.chidren,auth;
            for(let val of this.publics.Config.companyType){
               if(val.id==res.sysMenuIds.id){

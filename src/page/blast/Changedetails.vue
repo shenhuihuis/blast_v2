@@ -126,29 +126,29 @@
                     </tr>
                     <tr class="point pred" @click="addStaff(true,2,1,7,'爆破员')" v-for="i in listStaff.Brr.list.sonDrr.list">
                         <td>爆破员</td>
-                    <td>{{i.staffName}}</td>
-                        <td>{{publics.Filters.convert(i.staffLevel).level()}}</td>
+                         <td>{{i.staffName}}</td>
+                        <td>/</td>
                         <td>{{i.licenceNumber}}</td>
                         <td>{{i.staffId}}</td>
                     </tr>
                     <tr class="point pred" @click="addStaff(true,2,2,8,'安全员')" v-for="i in listStaff.Brr.list.sonErr.list">
                         <td>安全员</td>
                         <td>{{i.staffName}}</td>
-                        <td>{{publics.Filters.convert(i.staffLevel).level()}}</td>
+                        <td>/</td>
                         <td>{{i.licenceNumber}}</td>
                         <td>{{i.staffId}}</td>
                     </tr>
                     <tr class="point pred" @click="addStaff(true,2,3,9,'保管员')" v-for="i in listStaff.Brr.list.sonFrr.list">
                         <td>保管员</td>
                         <td>{{i.staffName}}</td>
-                        <td>{{publics.Filters.convert(i.staffLevel).level()}}</td>
+                        <td>/</td>
                         <td>{{i.licenceNumber}}</td>
                         <td>{{i.staffId}}</td>
                     </tr>
                 </table>
                 <table  border="1" class="table" width="100%">
                     <thead>
-                        <th colspan="6">安全评估单位及单位参与本项目的爆破作业人</th>
+                        <th colspan="6">安全评估单位及单位参与本项目的爆破作业人员名单</th>
                     </thead>
                     <tr>
                         <td width="180">单位名称</td>
@@ -185,7 +185,7 @@
                         <td>{{i.staffId}}</td>
                     </tr>
                 </table>
-                <table  border="1" class="table" width="100%">
+                <table  border="1" class="table" width="100%" v-if="form.projectSecurityAndSupervisor.length>1">
                     <thead>
                         <th colspan="6">安全监理单位参与本项目的爆破作业人员名单</th>
                     </thead>
@@ -211,16 +211,23 @@
                         <td width="320">公民身份证号</td>
                     
                     </tr>
-                    <tr class="point pred" @click="addStaff(true,4,null,11,'监理员')" v-for="i in listStaff.Drr.list.sonArr.list">
+                    <!-- <tr class="point pred" @click="addStaff(true,4,null,11,'监理员')" v-for="i in listStaff.Drr.list.sonArr.list">
+                        <td width="120">监理人员</td>
+                        <td>{{i.staffName}}</td>
+                        <td>{{publics.Filters.convert(i.staffLevel).level()}}</td>
+                        <td>{{i.licenceNumber}}</td>
+                        <td>{{i.staffId}}</td>
+                    </tr> -->
+                    <tr  v-for="i in listStaff.Drr.list.sonArr.list">
                         <td width="120">监理人员</td>
                         <td>{{i.staffName}}</td>
                         <td>{{publics.Filters.convert(i.staffLevel).level()}}</td>
                         <td>{{i.licenceNumber}}</td>
                         <td>{{i.staffId}}</td>
                     </tr>
-                    </tr>
+                
                 </table>
-                <el-tooltip class="item" effect="dark" content="Left Top 提示文字" placement="top">
+             
                     <table  border="1" class="table" width="100%" >
                         <thead>
                             <th colspan="5">安全警戒距离</th>
@@ -236,7 +243,7 @@
                             <td>{{i.safeDistance}}</td>
                         </tr>
                     </table>
-                </el-tooltip>
+         
                 <table  border="1" class="table" width="100%">
                     <thead>
                         <th colspan="9">民爆物品、物品运输及物品存储</th>
@@ -485,9 +492,9 @@
                 }
             })
             if(this.$route.query.id){
+                console.log(this.publics.DES.decode(this.$route.query.id))
                 this.handleDetail(this.publics.DES.decode(this.$route.query.id))
             }
-            
             
         },
         mounted(){
@@ -501,6 +508,7 @@
              this.publics.AJAX.$POST({
                  url:"project/"+id,
                  success:(e)=>{
+                    
                     e.worktime = [e.beginTime, e.endTime];
                     let policeIds=[],listStaff=this.listStaff;
                     for(let val of e.policeIds){
@@ -756,7 +764,7 @@
             },
             submitForm(){
                 let form=JSON.parse(JSON.stringify(this.form)),listStaff=JSON.parse(JSON.stringify(this.listStaff));
-                let policeIdslist=[...listStaff.Brr.list.sonCrr.list,...listStaff.Brr.list.sonDrr.list,...listStaff.Brr.list.sonErr.list,...listStaff.Brr.list.sonErr.list,...listStaff.Drr.list.sonArr.list];
+                let policeIdslist=[...listStaff.Brr.list.sonCrr.list,...listStaff.Brr.list.sonDrr.list,...listStaff.Brr.list.sonErr.list,...listStaff.Brr.list.sonFrr.list];
                /* let policeIdslist=[]
                 for(let val in this.listStaff){
                         for(let value in listStaff[val].list){

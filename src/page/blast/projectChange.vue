@@ -29,7 +29,7 @@
                 :data="dataList"
                 style="width: 100%">
                 <el-table-column
-                    prop="name"
+                    prop="projectName"
                     label="项目名称"
                     width="240px">
                 </el-table-column>
@@ -62,7 +62,7 @@
                 <el-table-column label="操作">
                 <template slot-scope="scope">
                       <el-button type="text" size="small"  @click = "handleDetail(scope.row.id)">查看</el-button>
-                      <el-button type="text" size="small"  @click = "completed(scope.row.id)"  v-if = 'scope.row.status == 0'>竣工</el-button>
+                      <!-- <el-button type="text" size="small"  @click = "completed(scope.row.id)"  v-if = 'scope.row.status == 0'>竣工</el-button> -->
                 </template>
                 </el-table-column>
                
@@ -119,11 +119,6 @@
             
         },
         methods:{
-            completed(id){
-                this.publics.AJAX.$POST({
-                    url:""
-                })
-            },
             went(id){
                 this.$router.push({'name':'Changedetails',query:{id:this.publics.DES.encode(id)}})
             },
@@ -134,7 +129,7 @@
                 this.diaglog.show=true;
             },
             handleDetail(id){         //查看详情
-                this.$router.push({'name':'prodetails',query:{id:this.publics.DES.encode(id)}})
+                this.$router.push({'name':'Changedetails',query:{id:this.publics.DES.encode(id)}})
             },  
             searchAct(){
                 this.SearchDTO.showSearch = true;
@@ -143,7 +138,6 @@
                  this.publics.AJAX.$POST({
                     url:"project/change/user/"+this.user.userId,
                     success:(e)=>{
-                        console.log(e)
                         this.changeList=e;
                     }
                 })
@@ -170,9 +164,10 @@
                     },
                     success:(e)=>{
                        for(let val of e.list){
-                           val.timer=this.publics.Filters.timer(val.beginTime)+" 至 "+this.publics.Filters.timer(val.endTime)
-                           val.examineTime=this.publics.Filters.timer(val.examineTime)
+                        //    val.timer=this.publics.Filters.timer(val.newBeginTime)+" 至 "+this.publics.Filters.timer(val.newEndTime)
+                        //    val.examineTime=this.publics.Filters.timer(val.createDate)
                        }
+                       console.log(e.list)
                        this.dataList=e.list;
                        this.total=e.count;
                     }

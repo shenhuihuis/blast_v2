@@ -177,7 +177,7 @@
   .repassword{
     width:1440px;
     margin:0 auto;
-    background:url("../assets/img/bg@2x.png") no-repeat center top #fff;
+    background:url("../assets/img/bg@2x1.png") no-repeat center top #fff;
     padding:320px 0 0 0;
     height:1000px;
     position: relative;

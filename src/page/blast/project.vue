@@ -139,7 +139,7 @@
                 this.init();
             },
             formatState(row){//列表状态过滤器
-                let messcode=["进行中","已竣工","已完成","进行中" ]
+                let messcode=["进行中","已竣工","已完成","进行中","进行中"]
                 return messcode[row.status];
             },
             init(){
@@ -150,6 +150,7 @@
                         name:this.SearchDTO.multiCondition
                     },
                     success:(e)=>{
+                       console.log(e);
                        for(let val of e.list){
                            val.timer=this.publics.Filters.timer(val.beginTime)+" 至 "+this.publics.Filters.timer(val.endTime)
                            val.examineTime=this.publics.Filters.timer(val.examineTime)

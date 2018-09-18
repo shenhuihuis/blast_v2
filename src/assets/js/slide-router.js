@@ -15,7 +15,7 @@ export default{
         // { router:'home',ico:'&#xe61e;',checked:false,id:'215b',tit:'民爆物品流向查询'},
       ],
       depot:[     //仓库管理模块
-        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页'},
+        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页',id:'AAAA'},
         { router:'management',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
         { router:'notice',ico:'&#xe61e;',checked:false,id:'4861',tit:'通知公告'},
         { router:'message',ico:'&#xe61e;',checked:false,id:'e0e1',tit:'消息'},
@@ -25,7 +25,7 @@ export default{
       //   { router:'management',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
       // ],
       logistics:[   //配送
-        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页'},
+        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页',id:'AAAA'},
         { router:'management',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
         { router:'logistics_car',ico:'&#xe61e;',checked:false,id:'c10c',tit:'车辆管理'},
         { router:'distribution',ico:'&#xe61e;',checked:false,id:'a45b',tit:'民爆物品配送'},
@@ -34,8 +34,9 @@ export default{
         { router:'message',ico:'&#xe61e;',checked:false,id:'56f9',tit:'消息'},
       ],
       project:[     //项目监管
-        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页'},
+        { router:'home',ico:'&#xe61e;',checked:false,tit:'首页',id:'AAAA'},
         { router:'management',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
+        { router:'changepeo',ico:'&#xe61e;',checked:false,id:'aea5',tit:'人员管理'},
         { router:'notice',ico:'&#xe61e;',checked:false,id:'88f2',tit:'通知公告'},
         { router:'message',ico:'&#xe61e;',checked:false,id:'f373',tit:'消息'},
       ],

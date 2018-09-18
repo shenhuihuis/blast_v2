@@ -143,7 +143,7 @@
                     else if(type==2 &&  (filextension != ".doc" && filextension != ".docx" && filextension != ".pdf" && filextension != ".pages")){
                         this.$message({
                             type: "error",
-                            message: "对不起，系统仅支持docx,docx,pdf，请您调整格式后重新上传，谢谢!"
+                            message: "对不起，系统仅支持doc,docx,pdf，请您调整格式后重新上传，谢谢!"
                             });
                         return false;
                     }

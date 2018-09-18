@@ -4,7 +4,7 @@ const Validator = {
           return callback(new Error('手机号不能为空'));
         }
         setTimeout(() => {
-            if (!(/^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/.test(value))) {
+            if (!(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/.test(value))) {
               callback(new Error('请输入正确的手机号'));
             } else {
               callback();
@@ -16,7 +16,7 @@ const Validator = {
           return callback(new Error('办公电话不能为空'));
         }
         setTimeout(() => {
-            if (!(/^([0-9]|[-])+$/g.test(value))) {
+            if (!(/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/.test(value))) {
               callback(new Error('请输入正确的办公电话'));
             } else {
               callback();
@@ -76,7 +76,7 @@ const Validator = {
       return callback(new Error('身份证号不能为空'))
     }
     setTimeout(()=>{
-      if(!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))){
+      if(!(/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/.test(value))){
         callback(new Error('请输入正确的身份证号'))
       }else{
         callback()
@@ -88,7 +88,7 @@ const Validator = {
       return callback(new Error('驾驶证号不能为空'))
     }
     setTimeout(()=>{
-      if(!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))){
+      if(!(/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/.test(value))){
         callback(new Error('请输入正确的驾驶证号'))
       }else{
         callback()

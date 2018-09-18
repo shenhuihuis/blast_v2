@@ -13,8 +13,9 @@
         </ul>
         <div class="btn">
           <el-row>
-            <el-button><router-link :to="{name:'login'}">返回</router-link></el-button>
+          
             <el-button type="primary" @click="firstStep">下一步</el-button>
+            <el-button><router-link :to="{name:'login'}">返回</router-link></el-button>
           </el-row>
         </div>
     </div>
@@ -47,10 +48,10 @@
                   <el-radio :label="2">三级</el-radio>
                   <el-radio :label="1">四级</el-radio>
                 </el-radio-group>
-                <el-tooltip placement="top" effect="light" class="say">
-                   <div slot="content">多行信息<br/>第二行信息</div>
+                <!-- <el-tooltip placement="top" effect="light" class="say">
+                   <div slot="content">一级爆破公司</div>
                    <a href="javascript:void(0)">级别说明</a>
-                </el-tooltip>
+                </el-tooltip> -->
               </el-form-item>
             </div>
             <el-form-item label="法人代表" prop="corporation" :rules="[{ required: true, message: '法人代表不能为空'}]">
@@ -64,14 +65,16 @@
             <el-form-item label="手机号码(账号)" prop="phone">
               <el-input v-model="form.phone"  @keyup.native="form.phone=form.phone.replace(/\D/g,'')"></el-input>
             </el-form-item>
-
+             <el-form-item label="办公电话" prop="officePhone">
+              <el-input v-model="form.officePhone"  @keyup.native="form.officePhone=form.officePhone.replace(/\D/g,'')"></el-input>
+            </el-form-item>
              <el-form-item label="公司邮箱"  prop="email">
               <el-input v-model="form.email"></el-input>
             </el-form-item>
             <div class="btn">
                 <el-form-item>
-                  <el-button @click="prev(0)">上一步</el-button>
                   <el-button type="primary" @click="next('form')">下一步</el-button>
+                  <el-button @click="prev(0)">上一步</el-button>
                 </el-form-item>
             </div> 
         </el-form>
@@ -106,7 +109,7 @@
                 <el-date-picker v-model="form1.txmExpireTime" type="date"  placeholder="选择日期" class="longs"  v-if="radio.txmExpireTime==0"></el-date-picker>
             </el-form-item>
             <el-form-item label="工商营业执照/统一社会信用代码" prop="txm" class="codeput">
-                   <el-input v-model="form1.txm" @keyup.native="form1.txm=form1.txm.replace(/[^\d|chun]/g,'')"></el-input>
+                   <el-input v-model="form1.txm" @keyup.native="form1.txm=form1.txm.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
             </el-form-item>
 
              <el-form-item :label="typename" prop="licenceNumberImg"  class="codeput"  :rules="[{ required: true, message: '许可证照片不能为空'}]">
@@ -122,15 +125,16 @@
                   <el-date-picker v-model="form1.licenceExpireTime" type="date" placeholder="选择日期" class="longs"  v-if="radio.licenceExpireTime==0"></el-date-picker>
             </el-form-item>
             <el-form-item label="许可证编号"  prop="licenceNumber" >
-                   <el-input v-model="form1.licenceNumber"  @keyup.native="form1.licenceNumber=form1.licenceNumber.replace(/\D/g,'')"></el-input>
+                   <el-input v-model="form1.licenceNumber"  @keyup.native="form1.licenceNumber=form1.licenceNumber.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
             </el-form-item>
             <el-form-item label="经营范围"   prop="workingRange" :rules="[{ required: true, message: '经营范围不能为空'}]">
                    <el-input v-model="form1.workingRange"  type="textarea"></el-input>
             </el-form-item>
              <div class="btn">
                 <el-form-item>
-                  <el-button @click="prev(1)">上一步</el-button>
                   <el-button type="primary" @click="sub('form1')">完成</el-button>
+                  <el-button @click="prev(1)">上一步</el-button>
+                
                 </el-form-item>
             </div> 
         </el-form>
@@ -160,7 +164,8 @@
              phone: [{ required: true, validator:Validator.tels,trigger: "blur"} ],
              email: [{ required: true, validator:Validator.email,trigger: "blur"} ],
              txm:[{ required: true, validator:Validator.txm,trigger: "blur"} ],
-             licenceNumber:[{ required: true, validator:Validator.licenceNumber,trigger: "blur"}]
+             licenceNumber:[{ required: true, validator:Validator.licenceNumber,trigger: "blur"}],
+             officePhone:[{ required: true, validator:Validator.phone,trigger: "blur"}]
            },
           typename:null,
           form:{
@@ -178,6 +183,7 @@
             phone:'',  //手机号码（账号）
             email:'',
             latitude:"",
+            officePhone:"",
             longitude:""
           },
           zoom: 12,

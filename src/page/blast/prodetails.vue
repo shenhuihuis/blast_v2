@@ -80,7 +80,7 @@
                         <td width="80">作业时间</td>
                         <td width="280">
                             <el-form-item prop="worktime" label-width="0" :rules="[{ required: true}]" >
-                                <el-date-picker v-model="form.worktime"  type="datetimerange" @change="dataFloat"  start-placeholder="开始日期"  value-format="timestamp" end-placeholder="结束日期" :picker-options="pickerOptions0"></el-date-picker>
+                                <el-date-picker v-model="form.worktime"  type="daterange" @change="dataFloat"  start-placeholder="开始日期"  value-format="timestamp" end-placeholder="结束日期"></el-date-picker>
                             </el-form-item>
                             
                         </td>
@@ -281,10 +281,10 @@
                         </thead>
                         <tr>
                             <td width="300">方位</td>
-                            <td width="300">被保护对象（米/m）</td>
-                            <td width="300">核定安全距离</td>
+                            <td width="300">被保护对象</td>
+                            <td width="300">核定安全距离（米/m）</td>
                         </tr>
-                        <tr class="point" @click="diaglog.type=1;diaglog.show=true;diaglog.title='安全警戒距离'" v-for="i in form.cautionDtoList" v-if="show==0">
+                        <tr class="point" @click="anquan" v-for="i in form.cautionDtoList" v-if="show==0">
                             <td>{{i.position}}</td>
                             <td>{{i.cautionObject}}</td>
                             <td>{{i.safeDistance}}</td>
@@ -657,7 +657,15 @@
             File:file
         },
         methods:{
-            
+            anquan(){
+                this.diaglog.type=1;
+                this.diaglog.show=true;
+                this.diaglog.title='安全警戒距离'
+                setTimeout(e=>{
+                    this.$refs['cautionDtoList'].resetFields()
+                },100)
+                //this.$refs['stafflist'].resetFields()
+            },
             mapshow(){
                 if(this.show==1) return false;
                 this.diaglog.title="作业地点"
@@ -783,7 +791,6 @@
                     "status":1,
                     "companyType":companyType
                 }
-               
                 this.publics.AJAX.$POST({
                     url:"system/depts/1/1",
                     hastoken:false,
@@ -828,6 +835,11 @@
                                 let superlist= this.form.companyIdList[1];
                                 superlist.companyId=getcomP.id;  
                             }
+                             this.$message({
+                                type:"success",
+                                message:"查询成功!"
+                            })
+                            return false;
                         }
                     },
                 })
@@ -923,7 +935,7 @@
                         staffName: "",
                         staffType: 10
                     };
-                    
+                  
                     for(let val of superlist){
                         if(!val.licenceNumber ||  !val.staffName || !val.staffId){
                             this.$message({
@@ -1226,9 +1238,19 @@
                if(!this.form.companyIdList[1].companyId){
                    this.$message({
                        type:"error",
-                       message:"请确认仓储公司！"
+                       message:"请确认仓储名称！"
                    })
                    return false;
+               }
+               for(let val of this.form.cautionDtoList){
+                   if(!val.position || !val.cautionObject || !val.safeDistance){
+                       this.$message({
+                           type:"error",
+                           message:"请完善安全警戒信息"
+                       })
+                       return false;
+                   }
+                     
                }
                this.$refs[formName].validate((valid) => {
                     if (valid) {

@@ -5,7 +5,7 @@
       <happy-scroll>
         <ul :style="{'height':hei+'px'}">
           <li v-for="(i,index) in slides" :class="{'drap':i.children}">
-            <div v-for="j in menu" v-if="i.id==j.id">
+            <!-- <div v-for="j in menu" v-if="i.id==j.id"> -->
               <router-link :to="{'name':i.router,params:{tit:i.tit}}" :class="{'curs':i.checked || current==index}" >
               <!-- <router-link :to="{'name':i.router}" :class="{'curs':i.checked}"  @click.native="routerlink($event)"> -->
                 <div class="tit">
@@ -22,7 +22,7 @@
                   </div>
                 </dd>
               </dl>
-            </div>
+            <!-- </div> -->
           </li>
         </ul>
       </happy-scroll>

@@ -1,7 +1,7 @@
 <template>
     <div class = 'car'>
         <div class = 'topBar'>
-            <el-select v-model="carSearchDTO.status" placeholder="选择状态" @change='init'>
+            <el-select v-model="carSearchDTO.status" placeholder="选择状态" @change='selectinit'>
                 <el-option
                 v-for="item in status"
                 :key="item.value"
@@ -85,7 +85,7 @@
                         <el-col :span = '3'>车牌号</el-col>
                         <el-col :span = '3'>
                             <el-form-item prop='carNumber'>
-                                <el-input v-model="newForm.carNumber" @keyup.native="newForm.carNumber=newForm.carNumber.replace(/[^0-9A-Za-z\u4e00-\u9fa5]/g,'')"></el-input>
+                                <el-input v-model="newForm.carNumber" @keyup.native="newForm.carNumber=newForm.carNumber.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span = '3'>车辆品牌</el-col>
@@ -128,7 +128,7 @@
                         <el-col :span = '3'>发动机号码</el-col>
                         <el-col :span = '3'>
                             <el-form-item prop='engineNumber'  :rules="[{ required: true }]">
-                                <el-input v-model="newForm.engineNumber"  @keyup.native="newForm.engineNumber = newForm.engineNumber.replace(/\D/g,'')"></el-input>
+                                <el-input v-model="newForm.engineNumber"  @keyup.native="newForm.engineNumber = newForm.engineNumber.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -493,6 +493,10 @@
         mounted(){
         },
         methods:{
+            selectinit(){
+                 this.carSearchDTO.page=1;
+                 this.init();
+            },
             initNewForm(){//表单初始
                 if(this.$refs['newForm']!==undefined){
                     this.$refs['newForm'].clearValidate();
@@ -577,6 +581,7 @@
                 if(this.carSearchDTO.carNumber == ''){
                     this.showSearch = false;
                 }
+                this.carSearchDTO.page=1;
                 this.init();
             },
             formatState(row){//列表状态过滤器

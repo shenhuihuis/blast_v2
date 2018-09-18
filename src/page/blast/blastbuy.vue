@@ -2,7 +2,7 @@
     <div class="blastbuy">
         <div class="comcontairs" v-if="show==0">
             <div class="topHad">
-                <el-select v-model="SearchDTO.status" placeholder="选择状态" @change='init'>
+                <el-select v-model="SearchDTO.status" placeholder="选择状态" @change='selectinit'>
                     <el-option
                     v-for="item in SearchDTO.statuslist"
                     :key="item.value"
@@ -28,7 +28,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="applyTime" label="申请时间"  width="240px"></el-table-column>
-                    <el-table-column prop="status" label="审批状态"  width="200px"  :formatter='formatState'></el-table-column>
+                    <el-table-column prop="status" label="状态"  width="200px"  :formatter='formatState'></el-table-column>
                     <el-table-column label="许可证">
                         <template slot-scope="scope" > 
                             <span v-if="scope.row.status==0 || scope.row.status==2">-</span>
@@ -38,7 +38,10 @@
                     </el-table-column>
                     <el-table-column label="操作">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small"  @click = "handleDetail(scope.row.id,scope.row.transportTime)">查看</el-button>
+                            <!-- <el-button type="text" size="small"  @click = "handleDetail(scope.row.id,scope.row.transportTime)">查看</el-button> -->
+                             <el-tooltip class="item" effect="dark" content="查看详情" placement="top">
+                                <i class = 'icon detail'  @click = "handleDetail(scope.row.id)"></i>
+                            </el-tooltip>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -325,7 +328,7 @@
                                 <el-form-item label="有效期至" label-width="80" prop='validityTime'  :rules="[{ required: true, message: '有效期不能为空'}]">
                                     <el-date-picker type="date" v-model="newForm.validityTime" style="width: 100%;" value-format="timestamp" :picker-options="pickerOptions0" ></el-date-picker>
                                 </el-form-item>
-                                <el-form-item label="配送时间" label-width="80" prop='transportTime'  :rules="[{ required: true, message: '运输终点不能为空'}]" v-if="newForm.validityTime">
+                                <el-form-item label="配送时间" label-width="80" prop='transportTime'  :rules="[{ required: true, message: '配送时间不能为空'}]" v-if="newForm.validityTime">
                                     <el-date-picker type="date" v-model="newForm.transportTime" style="width: 100%;"  value-format="timestamp" :picker-options="pickerOptions0" @change="cktime"></el-date-picker></el-date-picker>
                                 </el-form-item>
                             </el-col>
@@ -376,8 +379,7 @@
                         {value:0,text:'待审批'},
                         {value:1,text:'已通过'},
                         {value:2,text:'已驳回'},
-                        {value:3,text:'已上传许可证'},
-                        {value:4,text:'已完成'},
+                        {value:3,text:'已完成'},
                     ],
                     showSearch:false,//是否激活搜索
                 },
@@ -467,6 +469,10 @@
             File:file
         },
         methods:{
+            selectinit(){
+                this.page=1;
+                this.init();
+            },
             /*  {value:0,text:'待审批'},
                         {value:1,text:'已通过'},
                         {value:2,text:'已驳回'},
@@ -652,6 +658,7 @@
                         if(e.status==3){
                             this.newForm=e.regLicense
                             this.upload[0].url=this.upload[0].dataurl=e.regLicense.transportImg;
+                            this.newForm.status=true;
                         }
                         else{
                             this.newForm={  
@@ -736,7 +743,7 @@
                         
                         if(parseInt(this.form.blastlist.dbs.pyrotechnicsNumber)>this.blastlist[1].daoBaoSuo){
                             this.$message({
-                                message:"导爆索过购买量",
+                                message:"导爆索超过购买量",
                                 type:"error"
                             })
                             return false;
@@ -866,9 +873,10 @@
             addblast(like,index){
                 if(like==0){
                     for(let val of this.form.blastlist.zy){
-                        if(!val.pyrotechnicsModel){ this.$message({type:"error",message:"请填写火工品型号"});return false;}
-                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"请填写火工品数量"});return false;}
-                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"请选择火工品品名"});return false;}
+                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"请选择炸药品名"});return false;}
+                        if(!val.pyrotechnicsModel){ this.$message({type:"error",message:"请填写炸药型号"});return false;}
+                        if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"请填写炸药数量"});return false;}
+                      
                     }
                     let key={           
                         pyrotechnicsModel:"",  
@@ -880,10 +888,10 @@
                     this.form.blastlist.zy.push(key)
                 }else{
                      for(let val of this.form.blastlist.lg){
-                        console.log(val)
+                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"请选择雷管类型"});return false;}
                         if(!val.pyrotechnicsModel.d || !val.pyrotechnicsModel.m){ this.$message({type:"error",message:"请填写雷管段别"});return false;}
                         if(!val.pyrotechnicsNumber){ this.$message({type:"error",message:"请填写雷管数量"});return false;}
-                        if(!val.pyrotechnicsName){ this.$message({type:"error",message:"请选择雷管类型"});return false;}
+                    
                     }
                     let key={           
                         pyrotechnicsModel:{d:"",m:""},  
@@ -902,6 +910,7 @@
                 if(this.SearchDTO.multiCondition == ''){
                     this.SearchDTO.showSearch = false;
                 }
+                this.page=1;
                 this.init();
             },
             init(){
@@ -957,7 +966,7 @@
             },
             
             formatState(res){
-                let status=["未审批","通过","未通过","已上传许可证"];
+                let status=["待审批","已通过","已驳回","已完成"];
                 return status[res.status];
                 
               /*  let zynum =0,lgnum=0,gysnum=0;
@@ -1063,6 +1072,15 @@
 </script>
 <style lang="scss">
     .blastbuy{
+        .icon{
+            display: inline-block;
+            width: 17px;
+            height: 17px;
+            margin: 0 7px;
+        }
+        .detail{
+            background: url('../../assets/img/detail.png');
+        }
         .jgarea{
             position: relative;
             img{

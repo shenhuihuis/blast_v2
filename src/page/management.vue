@@ -117,22 +117,18 @@
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="性别" prop="gender" :rules="[{ required: true, message: '性别不能为空'}]">
-                            <div v-if="isDetail"> 
-                                <span v-if="newForm.gender==0">男性</span>   
-                                <span v-if="newForm.gender==1">女性</span>   
-                                <span v-if="newForm.gender==2">保密</span>   
-                            </div>
-                            <el-radio-group v-model="newForm.gender" v-else>
+                         
+                            <el-radio-group v-model="newForm.gender">
                                 <el-radio label="0" >男性</el-radio>
                                 <el-radio label="1" >女性</el-radio>
                                 <el-radio label="2" >保密</el-radio>
                             </el-radio-group>
                        </el-form-item>
-                        <el-form-item label="手机号码" label-width="80" prop='mobilePhone' :rules="[{ required: true, message: '手机号码不能为空'}]">
+                        <el-form-item label="手机号码" label-width="80" prop='mobilePhone'>
                             <el-input v-model="newForm.mobilePhone" @keyup.native="newForm.mobilePhone = newForm.mobilePhone.replace(/\D/g,'')"></el-input>
                         </el-form-item>
                         <el-form-item label="户籍所在地" label-width="80" prop= 'homeAddress' :rules="[{ required: true, message: '户籍所在地不能为空'}]">
-                            <el-input v-model="newForm.homeAddress" @keyup.native="newForm.homeAddress=newForm.homeAddress.replace(/[^\u4e00-\u9fa5]/g,'')"></el-input>
+                            <el-input v-model="newForm.homeAddress" @keyup.native="newForm.homeAddress=newForm.homeAddress.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -589,6 +585,7 @@
                     });
                     
                 } else {
+                    this.flag=true;
                     return false;
                 }
                 });
